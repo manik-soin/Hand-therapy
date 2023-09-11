@@ -32,21 +32,6 @@ import kotlin.Triple
 import android.graphics.DashPathEffect
 
 
-
-
-
-
-import android.graphics.Path
-
-
-
-import android.view.ViewAnimationUtils
-import android.view.animation.DecelerateInterpolator
-import java.util.Random
-import java.util.Timer
-import kotlin.concurrent.schedule
-
-
 class OverlayView(context: Context?, attrs: AttributeSet?) :
     View(context, attrs) {
 
@@ -69,7 +54,7 @@ class OverlayView(context: Context?, attrs: AttributeSet?) :
 
 
 
-    fun drawDashedLine(canvas: Canvas, startX: Float, startY: Float, stopX: Float, stopY: Float) {
+    private fun drawDashedLine(canvas: Canvas, startX: Float, startY: Float, stopX: Float, stopY: Float) {
         val paint = Paint()
         paint.style = Paint.Style.STROKE
         paint.strokeWidth = 5f
@@ -151,8 +136,12 @@ class OverlayView(context: Context?, attrs: AttributeSet?) :
 
     override fun draw(canvas: Canvas) {
         super.draw(canvas)
+        //println("awesome cdwdw")
 
-        val c = Compute
+        val c = Compute()
+
+
+
 
 
 
@@ -161,26 +150,37 @@ class OverlayView(context: Context?, attrs: AttributeSet?) :
 
         results?.let { handLandmarkerResult ->
             for (landmark in handLandmarkerResult.landmarks()) {
+                //val d=DataInput(landmark)
+
                 val pointsToConsider = arrayOf(4,1,8)
-                val pointsToConsider2 = arrayOf(0,5)//this is for the longest line reference
+                //val pointsToConsider2 = arrayOf(0,5)//this is for the longest line reference
                 val points = mutableListOf<Triple<Float, Float, Float>>()
                 val points2 = mutableListOf<Triple<Float, Float, Float>>()
-                println(landmark[0].x())
-                for ((a, normalizedLandmark) in landmark.withIndex()) {
-                    when (a) {
+
+               // d.greet()
+                val ang=c.angle3ds(landmark,4,1,8)
+
+
+                //Caliberate(): check if all points in bounding box
+                //5 second timer()
+                //not initial position angle
+                //reset count rep
+
+
+
+
+
+
+                for ((a, normalizedLandmark) in landmark.withIndex()) {//consider all points in landmark
+                    when (a) {//a goes from 0 to 21
                         in pointsToConsider -> {
                             val x = normalizedLandmark.x() * imageWidth * scaleFactor
                             val y = normalizedLandmark.y() * imageHeight * scaleFactor
                             val z = normalizedLandmark.z() * scaleFactor
                             canvas.drawPoint(x, y, pointPaint2)
                             points.add(Triple(x, y, z))
-                        }
-                        in pointsToConsider2 -> {
-                            val x = normalizedLandmark.x() * imageWidth * scaleFactor
-                            val y = normalizedLandmark.y() * imageHeight * scaleFactor
-                            val z = normalizedLandmark.z() * scaleFactor
-                            canvas.drawPoint(x, y, pointPaint)
-                            points2.add(Triple(x, y, z))
+
+
                         }
                         else -> {
                             canvas.drawPoint(
@@ -192,7 +192,7 @@ class OverlayView(context: Context?, attrs: AttributeSet?) :
                     }
                 }
 
-                if (points.size >= 1) {
+                //if (points.size >= 1) {
                     val (x1, y1, z1) = points[1]
                     val (x2, y2, z2) = points[0]
                     val (x3, y3, z3) = points[2]
@@ -200,16 +200,12 @@ class OverlayView(context: Context?, attrs: AttributeSet?) :
                     canvas.drawLine(x2, y2, x3, y3, linePaint2)
                     drawDashedLine(canvas,x1, y1, x3, y3)
 
-                    val v1 = floatArrayOf(x1 - x2, y1 - y2, z1 - z2)
-                    val v2 = floatArrayOf(x3 - x2, y3 - y2, z3 - z2)
-                    val dotProduct = v1[0] * v2[0] + v1[1] * v2[1] + v1[2] * v2[2]
-                    val magnitudeV1 = Math.sqrt((v1[0] * v1[0] + v1[1] * v1[1] + v1[2] * v1[2]).toDouble())
-                    val magnitudeV2 = Math.sqrt((v2[0] * v2[0] + v2[1] * v2[1] + v2[2] * v2[2]).toDouble())
-                    val angle = Math.toDegrees(Math.acos(dotProduct / (magnitudeV1 * magnitudeV2)))
+
                     val angle2 = c.angle3d(x1, y1, z1,x2, y2, z2,x3, y3, z3)
 
 
-                    val angletext = "Angle: %.2f, %.2f".format(angle,angle2)
+                    val angletext = "Angle: %.2f,%.2f".format(angle2,ang)
+                    //c.angle(landmark)
 
 
 
@@ -218,18 +214,16 @@ class OverlayView(context: Context?, attrs: AttributeSet?) :
 
 
 
-                    val (a1, b1, c1) = points2[0]
-                    val (a2, b2, c2) = points2[1]
 
-                    val distance = Math.sqrt(((x1 - x3) * (x1 - x3) + (y1 - y3) * (y1 - y3) + (z1 - z3) * (z1 - z3)).toDouble())
-                    val distance2 = Math.sqrt(((a1 - a2) * (a1 - a2) + (b1 - b2) * (b1 - b2) + (c1 - c2) * (c1 - c2)).toDouble())
 
-                    val distanceInCm = (distance*11/distance2)-1
+                    val distanceInCm = (c.distance3ds(landmark,4,8,imageWidth,imageHeight,scaleFactor)*2/c.distance3ds(landmark, 7,8,imageWidth,imageHeight,scaleFactor))-1
 
-                    val distanceInCm2 = (c.distance3d(x1, y1, z1,x3, y3, z3)*11/distance2)-1
+                    val distanceInCm2 = (c.distance3d(x1, y1, z1,x3, y3, z3)*2/c.distance3ds(landmark, 7,8,imageWidth,imageHeight,scaleFactor))-1
                     val text2 = "Distance: %.2f cm,%.2f cm".format(distanceInCm,distanceInCm2)
+                    println("$imageHeight:$imageWidth")
 
-                    if(distanceInCm<1f){
+
+                    if(distanceInCm2<1f){
 
                         //Timer().schedule(1000) {
                         displayConfetti(canvas)
@@ -247,7 +241,7 @@ class OverlayView(context: Context?, attrs: AttributeSet?) :
 
 
 
-                }
+                //}
 
                 HandLandmarker.HAND_CONNECTIONS.forEach {
                     canvas.drawLine(
@@ -270,7 +264,6 @@ class OverlayView(context: Context?, attrs: AttributeSet?) :
 
         }
     }
-
 
 
 
