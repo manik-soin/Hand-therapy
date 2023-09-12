@@ -31,9 +31,13 @@ import kotlin.math.min
 import kotlin.Triple
 import android.graphics.DashPathEffect
 
-
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.Rect
 class OverlayView(context: Context?, attrs: AttributeSet?) :
     View(context, attrs) {
+    private val paint = Paint()
+    private lateinit var imageBitmap: Bitmap
 
     private var results: HandLandmarkerResult? = null
     private var linePaint = Paint()
@@ -46,9 +50,12 @@ class OverlayView(context: Context?, attrs: AttributeSet?) :
     private var scaleFactor: Float = 1f
     private var imageWidth: Int = 1
     private var imageHeight: Int = 1
+    private val rectPaint = Paint()
 
     init {
         initPaints()
+        val imageResId = R.drawable.palm_left
+        imageBitmap = BitmapFactory.decodeResource(resources, imageResId)
     }
 
 
@@ -136,7 +143,25 @@ class OverlayView(context: Context?, attrs: AttributeSet?) :
 
     override fun draw(canvas: Canvas) {
         super.draw(canvas)
-        //println("awesome cdwdw")
+        // Calculate the position to draw the image
+        val x1 = (canvas.width - imageBitmap.width * 2) / 2f
+        val y1 = (canvas.height - imageBitmap.height * 2) / 2f
+        val x2 = (canvas.width + imageBitmap.width * 2) / 2f
+        val y2 = (canvas.height + imageBitmap.height * 2) / 2f
+
+
+
+
+        // Scale the bitmap
+        val scaledBitmap = Bitmap.createScaledBitmap(
+            imageBitmap,
+            imageBitmap.width * 2,
+            imageBitmap.height * 2,
+            true
+        )
+
+        // Draw the scaled image on the canvas
+        canvas.drawBitmap(scaledBitmap, x1, y1, paint)
 
         val c = Compute()
 
