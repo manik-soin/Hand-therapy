@@ -137,33 +137,52 @@ class OverlayView(context: Context?, attrs: AttributeSet?) :
         for (i in 0..10) {
             val x = (0..canvas.width).random().toFloat()
             val y = (0..canvas.height).random().toFloat()
-            canvas.drawCircle(x, y, 20f, randomColor())
+            canvas.drawCircle(x, y, 15f, randomColor())
         }
     }
 
     override fun draw(canvas: Canvas) {
         super.draw(canvas)
         // Calculate the position to draw the image
-        val x1 = (canvas.width - imageBitmap.width * 2) / 2f
-        val y1 = (canvas.height - imageBitmap.height * 2) / 2f
-        val x2 = (canvas.width + imageBitmap.width * 2) / 2f
-        val y2 = (canvas.height + imageBitmap.height * 2) / 2f
+        val x1 = (canvas.width - imageBitmap.width ) / 2f
+        val y1 = (canvas.height - imageBitmap.height ) / 2f
+        val x2 = (canvas.width + imageBitmap.width ) / 2f
+        val y2 = (canvas.height + imageBitmap.height ) / 2f
 
 
+        val x3 = x1 + (x2 - x1) * .2
+        val y3 = y1 + (y2 - y1) * .2
+        val x4 = x2 - (x2 - x1) * .2
+        val y4 = y2 - (y2 - y1) * .2
+
+        paint.color = Color.RED
+        paint.style = Paint.Style.FILL
+        paint.style = Paint.Style.STROKE
+        paint.strokeWidth = 20f
 
 
         // Scale the bitmap
         val scaledBitmap = Bitmap.createScaledBitmap(
             imageBitmap,
-            imageBitmap.width * 2,
-            imageBitmap.height * 2,
+            imageBitmap.width ,
+            imageBitmap.height ,
             true
         )
 
         // Draw the scaled image on the canvas
         canvas.drawBitmap(scaledBitmap, x1, y1, paint)
+        val rect = Rect(x1.toInt(), y1.toInt(), x2.toInt(), y2.toInt())
+        canvas.drawRect(rect, paint)
+
+        val rect2 = Rect(x3.toInt(), y3.toInt(), x4.toInt(), y4.toInt())
+        canvas.drawRect(rect2, paint)
+
 
         val c = Compute()
+        val v = Calibrate()
+
+
+
 
 
 
@@ -196,6 +215,10 @@ class OverlayView(context: Context?, attrs: AttributeSet?) :
 
 
 
+
+
+
+
                 for ((a, normalizedLandmark) in landmark.withIndex()) {//consider all points in landmark
                     when (a) {//a goes from 0 to 21
                         in pointsToConsider -> {
@@ -215,6 +238,15 @@ class OverlayView(context: Context?, attrs: AttributeSet?) :
                             )
                         }
                     }
+                }
+                if(v.validate(landmark, x1,y1, x2, y2,imageWidth,imageHeight,scaleFactor)){
+                    println("validated")
+                    val vtext = "VALIDATED"
+                    //c.angle(landmark)
+
+
+
+                    canvas.drawText(vtext, 100f, 100f, textPaint)
                 }
 
                 //if (points.size >= 1) {
@@ -245,7 +277,7 @@ class OverlayView(context: Context?, attrs: AttributeSet?) :
 
                     val distanceInCm2 = (c.distance3d(x1, y1, z1,x3, y3, z3)*2/c.distance3ds(landmark, 7,8,imageWidth,imageHeight,scaleFactor))-1
                     val text2 = "Distance: %.2f cm,%.2f cm".format(distanceInCm,distanceInCm2)
-                    println("$imageHeight:$imageWidth")
+                    //println("$imageHeight:$imageWidth")
 
 
                     if(distanceInCm2<1f){
