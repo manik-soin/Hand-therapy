@@ -34,10 +34,14 @@ import android.graphics.DashPathEffect
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Rect
+import android.os.CountDownTimer
+
+
 class OverlayView(context: Context?, attrs: AttributeSet?) :
     View(context, attrs) {
     private val paint = Paint()
     private lateinit var imageBitmap: Bitmap
+
 
     private var results: HandLandmarkerResult? = null
     private var linePaint = Paint()
@@ -50,7 +54,15 @@ class OverlayView(context: Context?, attrs: AttributeSet?) :
     private var scaleFactor: Float = 1f
     private var imageWidth: Int = 1
     private var imageHeight: Int = 1
-    private val rectPaint = Paint()
+
+
+
+
+    private val timerPaint = Paint().apply {
+        color = Color.BLACK
+        textSize = 48f
+        typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
+    }
 
     init {
         initPaints()
@@ -140,14 +152,41 @@ class OverlayView(context: Context?, attrs: AttributeSet?) :
             canvas.drawCircle(x, y, 15f, randomColor())
         }
     }
+    private var timertext=""
+    private val timer=object : CountDownTimer(6000, 100) {
+
+        override fun onTick(millisUntilFinished: Long) {
+            timertext=("seconds remaining: " + millisUntilFinished / 1000)
+        }
+
+        override fun onFinish() {
+            timertext=("done!")
+            validation_complete=true
+        }
+    }
+    private var ft=true
+    private var validation_complete=false
+
+
+
+
+
+
 
     override fun draw(canvas: Canvas) {
         super.draw(canvas)
+        var sf2 = if (canvas.height<canvas.width){
+            canvas.height/imageBitmap.height
+        } else{
+            canvas.width/imageBitmap.width
+        }
+
+
         // Calculate the position to draw the image
-        val x1 = (canvas.width - imageBitmap.width ) / 2f
-        val y1 = (canvas.height - imageBitmap.height ) / 2f
-        val x2 = (canvas.width + imageBitmap.width ) / 2f
-        val y2 = (canvas.height + imageBitmap.height ) / 2f
+        val x1 = (canvas.width - imageBitmap.width *sf2 ) / 2f
+        val y1 = (canvas.height - imageBitmap.height*sf2  ) / 2f
+        val x2 = (canvas.width + imageBitmap.width *sf2 ) / 2f
+        val y2 = (canvas.height + imageBitmap.height*sf2  ) / 2f
 
 
         val x3 = x1 + (x2 - x1) * .2
@@ -161,21 +200,23 @@ class OverlayView(context: Context?, attrs: AttributeSet?) :
         paint.strokeWidth = 20f
 
 
+
+
         // Scale the bitmap
         val scaledBitmap = Bitmap.createScaledBitmap(
             imageBitmap,
-            imageBitmap.width ,
-            imageBitmap.height ,
+            imageBitmap.width *sf2 ,
+            imageBitmap.height *sf2 ,
             true
         )
-
+        if(!validation_complete){
         // Draw the scaled image on the canvas
         canvas.drawBitmap(scaledBitmap, x1, y1, paint)
         val rect = Rect(x1.toInt(), y1.toInt(), x2.toInt(), y2.toInt())
         canvas.drawRect(rect, paint)
 
         val rect2 = Rect(x3.toInt(), y3.toInt(), x4.toInt(), y4.toInt())
-        canvas.drawRect(rect2, paint)
+        canvas.drawRect(rect2, paint)}
 
 
         val c = Compute()
@@ -183,18 +224,10 @@ class OverlayView(context: Context?, attrs: AttributeSet?) :
 
 
 
-
-
-
-
-
-
-
-
-
         results?.let { handLandmarkerResult ->
             for (landmark in handLandmarkerResult.landmarks()) {
                 //val d=DataInput(landmark)
+                val validated=v.validate(landmark, x1,y1, x2, y2,imageWidth,imageHeight,scaleFactor)
 
                 val pointsToConsider = arrayOf(4,1,8)
                 //val pointsToConsider2 = arrayOf(0,5)//this is for the longest line reference
@@ -203,21 +236,6 @@ class OverlayView(context: Context?, attrs: AttributeSet?) :
 
                // d.greet()
                 val ang=c.angle3ds(landmark,4,1,8)
-
-
-                //Caliberate(): check if all points in bounding box
-                //5 second timer()
-                //not initial position angle
-                //reset count rep
-
-
-
-
-
-
-
-
-
 
                 for ((a, normalizedLandmark) in landmark.withIndex()) {//consider all points in landmark
                     when (a) {//a goes from 0 to 21
@@ -239,15 +257,29 @@ class OverlayView(context: Context?, attrs: AttributeSet?) :
                         }
                     }
                 }
-                if(v.validate(landmark, x1,y1, x2, y2,imageWidth,imageHeight,scaleFactor)){
-                    println("validated")
+
+
+                //var countdownText = ""
+                if(validated){
+
                     val vtext = "VALIDATED"
-                    //c.angle(landmark)
+                    if(ft){
+                    timer.start()}
+                    ft=false
 
 
+                    canvas.drawText(vtext, 100f, 100f, textPaint2)
+                    canvas.drawText(timertext, 100f, 300f, textPaint)
 
-                    canvas.drawText(vtext, 100f, 100f, textPaint)
+
                 }
+                else{
+                    timer.cancel()
+                    ft=true
+                }
+
+
+
 
                 //if (points.size >= 1) {
                     val (x1, y1, z1) = points[1]

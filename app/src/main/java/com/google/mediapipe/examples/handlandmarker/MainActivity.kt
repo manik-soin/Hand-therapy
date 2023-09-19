@@ -16,11 +16,14 @@
 package com.google.mediapipe.examples.handlandmarker
 
 import android.os.Bundle
+import android.os.CountDownTimer
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
 import com.google.mediapipe.examples.handlandmarker.databinding.ActivityMainBinding
+
+
 
 class MainActivity : AppCompatActivity() {
     private lateinit var activityMainBinding: ActivityMainBinding
