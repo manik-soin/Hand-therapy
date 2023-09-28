@@ -28,18 +28,23 @@ import com.google.mediapipe.examples.handlandmarker.databinding.ActivityMainBind
 class MainActivity : AppCompatActivity() {
     private lateinit var activityMainBinding: ActivityMainBinding
     private val viewModel: MainViewModel by viewModels()
-    private var settingValue: String? = null
+    private var exerciseValue: String? = null
+    private var difficultyValue: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         activityMainBinding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(activityMainBinding.root)
 
-        settingValue = intent.getStringExtra("settingValue")
+        exerciseValue = intent.getStringExtra("exercise")
+        difficultyValue = intent.getStringExtra("difficulty")
     }
 
-    fun getSettingValue(): String? {
-        return settingValue
+    fun getExerciseValue(): String? {
+        return exerciseValue
+    }
+    fun getDifficultyValue(): String? {
+        return difficultyValue
     }
 
     override fun onBackPressed() {

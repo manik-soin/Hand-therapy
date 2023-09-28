@@ -69,11 +69,14 @@ class ExerciseSelection : AppCompatActivity() {
 
         // Set click listener for Next button
         buttonNext.setOnClickListener {
-            val settingValue = textView.text.toString()
+            val exerciseValue = textView.text.toString()
+            val difficultyValue = textView2.text.toString()
 
             // Create an intent to start the next activity
             val intent = Intent(this@ExerciseSelection, MainActivity::class.java)
-            intent.putExtra("settingValue", settingValue)
+            intent.putExtra("exercise", exerciseValue)
+            intent.putExtra("difficulty", difficultyValue)
+
             startActivity(intent)
         }
     }

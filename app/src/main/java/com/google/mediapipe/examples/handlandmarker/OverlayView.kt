@@ -43,8 +43,6 @@ class OverlayView(context: Context?, attrs: AttributeSet?) :
     View(context, attrs) {
     private val paint = Paint()
     private var imageBitmap: Bitmap
-
-
     private var results: HandLandmarkerResult? = null
     private var linePaint = Paint()
     private var linePaint2 = Paint()
@@ -163,11 +161,8 @@ class OverlayView(context: Context?, attrs: AttributeSet?) :
     private var validation_complete=false
     private var touch_flag=true
     private var touchcount =0
-
-
-
-
-
+    private var maxdistance =0
+    private var mindistance =9999
 
 
     override fun draw(canvas: Canvas) {
@@ -192,9 +187,13 @@ class OverlayView(context: Context?, attrs: AttributeSet?) :
         val y4 = y2 - (y2 - y1) * .25
 
         val mainActivity = context as? MainActivity
-        val settingValue = mainActivity?.getSettingValue()
-        if (settingValue != null) {
-            canvas.drawText(settingValue, 400f, 100f, textPaint)
+        val exerciseValue = mainActivity?.getExerciseValue()
+        if (exerciseValue != null) {
+            canvas.drawText(exerciseValue, 400f, 100f, textPaint)
+        }
+        val difficultyValue = mainActivity?.getDifficultyValue()
+        if (difficultyValue != null) {
+            canvas.drawText(difficultyValue, 400f, 200f, textPaint)
         }
 
         paint.color = Color.RED
@@ -282,9 +281,6 @@ class OverlayView(context: Context?, attrs: AttributeSet?) :
                     ft=true
                 }
 
-
-
-
                 //if (points.size >= 1) {
                     val (x1, y1, z1) = points[1]
                     val (x2, y2, z2) = points[0]
@@ -292,11 +288,6 @@ class OverlayView(context: Context?, attrs: AttributeSet?) :
                     canvas.drawLine(x1, y1, x2, y2, linePaint2)
                     canvas.drawLine(x2, y2, x3, y3, linePaint2)
                     drawDashedLine(canvas,x1, y1, x3, y3)
-
-
-
-
-
 
 
                     val angletext = "Angle: %.2f".format(ang)
@@ -332,10 +323,15 @@ class OverlayView(context: Context?, attrs: AttributeSet?) :
 
                         displayConfetti(canvas)
                         canvas.drawText("W E L L   D O N E !  : )", ((x1 + x3) / 2)+100, ((y1 + y3) / 2)+100, textPaint2)
-//                        val intent = Intent(this@OverlayView, ExerciseSelection::class.java).apply {
-//
-//                            startActivity(this)
-//                        }
+
+                        val context = context
+
+                        // Create an Intent for the target activity
+                        val intent = Intent(context, ExerciseSelection::class.java)
+
+                        // Start the activity
+                        context.startActivity(intent)
+
                     }
 
 
