@@ -16,6 +16,7 @@
 package com.google.mediapipe.examples.handlandmarker
 
 import android.content.Context
+import android.content.Intent
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
@@ -35,12 +36,13 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Rect
 import android.os.CountDownTimer
+import androidx.core.content.ContextCompat.startActivity
 
 
 class OverlayView(context: Context?, attrs: AttributeSet?) :
     View(context, attrs) {
     private val paint = Paint()
-    private lateinit var imageBitmap: Bitmap
+    private var imageBitmap: Bitmap
 
 
     private var results: HandLandmarkerResult? = null
@@ -56,13 +58,6 @@ class OverlayView(context: Context?, attrs: AttributeSet?) :
     private var imageHeight: Int = 1
 
 
-
-
-    private val timerPaint = Paint().apply {
-        color = Color.BLACK
-        textSize = 48f
-        typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
-    }
 
     init {
         initPaints()
@@ -153,7 +148,7 @@ class OverlayView(context: Context?, attrs: AttributeSet?) :
         }
     }
     private var timertext=""
-    private val timer=object : CountDownTimer(6000, 100) {
+    private val timer=object : CountDownTimer(4000, 100) {
 
         override fun onTick(millisUntilFinished: Long) {
             timertext=("seconds remaining: " + millisUntilFinished / 1000)
@@ -166,6 +161,8 @@ class OverlayView(context: Context?, attrs: AttributeSet?) :
     }
     private var ft=true
     private var validation_complete=false
+    private var touch_flag=true
+    private var touchcount =0
 
 
 
@@ -183,16 +180,22 @@ class OverlayView(context: Context?, attrs: AttributeSet?) :
 
 
         // Calculate the position to draw the image
-        val x1 = (canvas.width - imageBitmap.width *sf2 ) / 2f
-        val y1 = (canvas.height - imageBitmap.height*sf2  ) / 2f
-        val x2 = (canvas.width + imageBitmap.width *sf2 ) / 2f
-        val y2 = (canvas.height + imageBitmap.height*sf2  ) / 2f
+        val x1 = (canvas.width - imageBitmap.width *sf2 ) / 2f - 10f
+        val y1 = (canvas.height - imageBitmap.height*sf2  ) / 2f - 10f
+        val x2 = (canvas.width + imageBitmap.width *sf2 ) / 2f + 10f
+        val y2 = (canvas.height + imageBitmap.height*sf2  ) / 2f + 10f
 
 
-        val x3 = x1 + (x2 - x1) * .2
-        val y3 = y1 + (y2 - y1) * .2
-        val x4 = x2 - (x2 - x1) * .2
-        val y4 = y2 - (y2 - y1) * .2
+        val x3 = x1 + (x2 - x1) * .25
+        val y3 = y1 + (y2 - y1) * .25
+        val x4 = x2 - (x2 - x1) * .25
+        val y4 = y2 - (y2 - y1) * .25
+
+        val mainActivity = context as? MainActivity
+        val settingValue = mainActivity?.getSettingValue()
+        if (settingValue != null) {
+            canvas.drawText(settingValue, 400f, 100f, textPaint)
+        }
 
         paint.color = Color.RED
         paint.style = Paint.Style.FILL
@@ -221,6 +224,8 @@ class OverlayView(context: Context?, attrs: AttributeSet?) :
 
         val c = Compute()
         val v = Calibrate()
+        canvas.drawText(" REPS: $touchcount", 200f, 100f, textPaint)
+
 
 
 
@@ -259,7 +264,6 @@ class OverlayView(context: Context?, attrs: AttributeSet?) :
                 }
 
 
-                //var countdownText = ""
                 if(validated){
 
                     val vtext = "VALIDATED"
@@ -290,10 +294,12 @@ class OverlayView(context: Context?, attrs: AttributeSet?) :
                     drawDashedLine(canvas,x1, y1, x3, y3)
 
 
-                    val angle2 = c.angle3d(x1, y1, z1,x2, y2, z2,x3, y3, z3)
 
 
-                    val angletext = "Angle: %.2f,%.2f".format(angle2,ang)
+
+
+
+                    val angletext = "Angle: %.2f".format(ang)
                     //c.angle(landmark)
 
 
@@ -301,36 +307,42 @@ class OverlayView(context: Context?, attrs: AttributeSet?) :
                     canvas.drawText(angletext, x2, y2 - 50, textPaint)
 
 
-
-
-
-
                     val distanceInCm = (c.distance3ds(landmark,4,8,imageWidth,imageHeight,scaleFactor)*2/c.distance3ds(landmark, 7,8,imageWidth,imageHeight,scaleFactor))-1
 
-                    val distanceInCm2 = (c.distance3d(x1, y1, z1,x3, y3, z3)*2/c.distance3ds(landmark, 7,8,imageWidth,imageHeight,scaleFactor))-1
-                    val text2 = "Distance: %.2f cm,%.2f cm".format(distanceInCm,distanceInCm2)
-                    //println("$imageHeight:$imageWidth")
 
-
-                    if(distanceInCm2<1f){
-
-                        //Timer().schedule(1000) {
-                        displayConfetti(canvas)
+                    val text2 = "Distance: %.2f cm".format(distanceInCm)
 
 
 
-                        canvas.drawText("W E L L   D O N E !  : )", ((x1 + x3) / 2)+100, ((y1 + y3) / 2)+100, textPaint2)
+                touch_flag = if(distanceInCm<1f){
 
 
-
+                    if(touch_flag){
+                        touchcount++
                     }
+                    false
+
+
+                }else{
+                    true
+                }
+
+
+                    if(touchcount==5){
+
+                        displayConfetti(canvas)
+                        canvas.drawText("W E L L   D O N E !  : )", ((x1 + x3) / 2)+100, ((y1 + y3) / 2)+100, textPaint2)
+//                        val intent = Intent(this@OverlayView, ExerciseSelection::class.java).apply {
+//
+//                            startActivity(this)
+//                        }
+                    }
+
 
                     canvas.drawText(text2, (x1 + x3) / 2, (y1 + y3) / 2, textPaint)
 
 
 
-
-                //}
 
                 HandLandmarker.HAND_CONNECTIONS.forEach {
                     canvas.drawLine(
