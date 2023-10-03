@@ -25,9 +25,9 @@ class ExerciseSelection : AppCompatActivity() {
             val settingValue = editTextSetting.text.toString()
 
             // Create an intent to start the next activity
-            val intent = Intent(this@ExerciseSelection, MainActivity::class.java)
-            intent.putExtra("settingValue", settingValue)
-            startActivity(intent)
+//            val intent = Intent(this@ExerciseSelection, MainActivity::class.java)
+//            intent.putExtra("settingValue", settingValue)
+//            startActivity(intent)
         }
     }
 }

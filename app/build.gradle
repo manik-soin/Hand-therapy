@@ -56,6 +56,7 @@ project.ext.ASSET_DIR = projectDir.toString() + '/src/main/assets'
 apply from: 'download_tasks.gradle'
 
 dependencies {
+    implementation fileTree(dir: "libs", include: ["*.jar", '*.aar'])
 
     // Kotlin lang
     implementation 'androidx.core:core-ktx:1.8.0'
@@ -65,7 +66,7 @@ dependencies {
     implementation 'com.google.android.material:material:1.7.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     implementation 'androidx.fragment:fragment-ktx:1.5.4'
-
+    implementation 'com.google.mediapipe:hands:0.10.5'
 
 
     // Navigation library
@@ -97,5 +98,7 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
 
     // MediaPipe Library
-    implementation 'com.google.mediapipe:tasks-vision:0.10.0'
+//    implementation 'com.google.mediapipe:tasks-vision:0.10.0'
+
+
 }
