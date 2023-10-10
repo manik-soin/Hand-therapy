@@ -34,6 +34,10 @@
         <activity
             android:name=".MainActivity"
             android:exported="true" />
+        <activity
+            android:name=".StatsActivity"
+            android:exported="true" />
+
     </application>
 
 </manifest>

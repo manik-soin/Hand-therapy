@@ -36,7 +36,7 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Rect
 import android.os.CountDownTimer
-import androidx.core.content.ContextCompat.startActivity
+import java.io.Serializable
 
 
 class OverlayView(context: Context?, attrs: AttributeSet?) :
@@ -161,8 +161,13 @@ class OverlayView(context: Context?, attrs: AttributeSet?) :
     private var validation_complete=false
     private var touch_flag=true
     private var touchcount =0
-    private var maxdistance =0
-    private var mindistance =9999
+    private var maxdistance =0f
+    private var mindistance =9999f
+    val stats = mutableListOf(
+        mutableListOf<Float>(),
+        mutableListOf<Float>(),
+    )
+
 
 
     override fun draw(canvas: Canvas) {
@@ -180,18 +185,19 @@ class OverlayView(context: Context?, attrs: AttributeSet?) :
         val x2 = (canvas.width + imageBitmap.width *sf2 ) / 2f + 10f
         val y2 = (canvas.height + imageBitmap.height*sf2  ) / 2f + 10f
 
-
+        //red rectangle coordinates
         val x3 = x1 + (x2 - x1) * .25
         val y3 = y1 + (y2 - y1) * .25
         val x4 = x2 - (x2 - x1) * .25
         val y4 = y2 - (y2 - y1) * .25
 
+        //getting the extra intent value
         val mainActivity = context as? MainActivity
-        val exerciseValue = mainActivity?.getExerciseValue()
+        val exerciseValue = mainActivity?.getExerciseValue()//exercise value
         if (exerciseValue != null) {
             canvas.drawText(exerciseValue, 400f, 100f, textPaint)
         }
-        val difficultyValue = mainActivity?.getDifficultyValue()
+        val difficultyValue = mainActivity?.getDifficultyValue()//difficulty value
         if (difficultyValue != null) {
             canvas.drawText(difficultyValue, 400f, 200f, textPaint)
         }
@@ -238,7 +244,7 @@ class OverlayView(context: Context?, attrs: AttributeSet?) :
                 val points = mutableListOf<Triple<Float, Float, Float>>()
                 val points2 = mutableListOf<Triple<Float, Float, Float>>()
 
-               // d.greet()
+
                 val ang=c.angle3ds(landmark,4,1,8)
 
                 for ((a, normalizedLandmark) in landmark.withIndex()) {//consider all points in landmark
@@ -249,7 +255,6 @@ class OverlayView(context: Context?, attrs: AttributeSet?) :
                             val z = normalizedLandmark.z() * scaleFactor
                             canvas.drawPoint(x, y, pointPaint2)
                             points.add(Triple(x, y, z))
-
 
                         }
                         else -> {
@@ -281,35 +286,41 @@ class OverlayView(context: Context?, attrs: AttributeSet?) :
                     ft=true
                 }
 
-                //if (points.size >= 1) {
-                    val (x1, y1, z1) = points[1]
-                    val (x2, y2, z2) = points[0]
-                    val (x3, y3, z3) = points[2]
-                    canvas.drawLine(x1, y1, x2, y2, linePaint2)
-                    canvas.drawLine(x2, y2, x3, y3, linePaint2)
-                    drawDashedLine(canvas,x1, y1, x3, y3)
+
+                val (x1, y1, z1) = points[1]
+                val (x2, y2, z2) = points[0]
+                val (x3, y3, z3) = points[2]
+                canvas.drawLine(x1, y1, x2, y2, linePaint2)
+                canvas.drawLine(x2, y2, x3, y3, linePaint2)
+                drawDashedLine(canvas,x1, y1, x3, y3)
 
 
-                    val angletext = "Angle: %.2f".format(ang)
-                    //c.angle(landmark)
+                val angletext = "Angle: %.2f".format(ang)
+                //c.angle(landmark)
+
+                canvas.drawText(angletext, x2, y2 - 50, textPaint)
 
 
-
-                    canvas.drawText(angletext, x2, y2 - 50, textPaint)
-
-
-                    val distanceInCm = (c.distance3ds(landmark,4,8,imageWidth,imageHeight,scaleFactor)*2/c.distance3ds(landmark, 7,8,imageWidth,imageHeight,scaleFactor))-1
+                val distanceInCm = (c.distance3ds(landmark,4,8,imageWidth,imageHeight,scaleFactor)*2/c.distance3ds(landmark, 7,8,imageWidth,imageHeight,scaleFactor))-1
 
 
-                    val text2 = "Distance: %.2f cm".format(distanceInCm)
+                val text2 = "Distance: %.2f cm".format(distanceInCm)
 
-
+                //for stats
+                if(distanceInCm<mindistance){mindistance=distanceInCm}
+                if(distanceInCm>maxdistance){maxdistance=distanceInCm}
 
                 touch_flag = if(distanceInCm<1f){
 
 
                     if(touch_flag){
                         touchcount++
+                        println(mindistance)
+                        stats[0].add(mindistance)
+                        println(maxdistance)
+                        stats[1].add(maxdistance)
+                        mindistance=9999f
+                        maxdistance=0f
                     }
                     false
 
@@ -319,25 +330,25 @@ class OverlayView(context: Context?, attrs: AttributeSet?) :
                 }
 
 
-                    if(touchcount==5){
 
-                        displayConfetti(canvas)
-                        canvas.drawText("W E L L   D O N E !  : )", ((x1 + x3) / 2)+100, ((y1 + y3) / 2)+100, textPaint2)
+                if(touchcount==5){
 
-                        val context = context
+                    displayConfetti(canvas)
+                    canvas.drawText("W E L L   D O N E !  : )", ((x1 + x3) / 2)+100, ((y1 + y3) / 2)+100, textPaint2)
 
-                        // Create an Intent for the target activity
-                        val intent = Intent(context, ExerciseSelection::class.java)
+                    val context = context
 
-                        // Start the activity
-                        context.startActivity(intent)
+                    // Create an Intent for the target activity
+                    val intent = Intent(context, StatsActivity::class.java)//EXERCISE SELECTION
+                    intent.putExtra("listValues", stats as Serializable)
 
-                    }
+                    // Start the activity
+                    context.startActivity(intent)
+
+                }
 
 
-                    canvas.drawText(text2, (x1 + x3) / 2, (y1 + y3) / 2, textPaint)
-
-
+                canvas.drawText(text2, (x1 + x3) / 2, (y1 + y3) / 2, textPaint)
 
 
                 HandLandmarker.HAND_CONNECTIONS.forEach {
