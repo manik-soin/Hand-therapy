@@ -30,6 +30,8 @@ class MainActivity : AppCompatActivity() {
     private val viewModel: MainViewModel by viewModels()
     private var exerciseValue: String? = null
     private var difficultyValue: String? = null
+    private var exerciseID: Int? = null
+    private var difficultyID: Int? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,7 +39,9 @@ class MainActivity : AppCompatActivity() {
         setContentView(activityMainBinding.root)
 
         exerciseValue = intent.getStringExtra("exercise")
+        exerciseID = intent.getIntExtra("exerciseID",0)
         difficultyValue = intent.getStringExtra("difficulty")
+        difficultyID = intent.getIntExtra("difficultyID",0)
     }
 
     fun getExerciseValue(): String? {
@@ -46,8 +50,19 @@ class MainActivity : AppCompatActivity() {
     fun getDifficultyValue(): String? {
         return difficultyValue
     }
+    fun getExerciseID(): Int? {
+        return exerciseID
+    }
+    fun getDifficultyID(): Int? {
+        return difficultyID
+    }
+
 
     override fun onBackPressed() {
         finish()
     }
 }
+
+
+
+

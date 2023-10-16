@@ -59,7 +59,7 @@ class StatsActivity : AppCompatActivity() {
 
                 // Add the data values
                 for (value in rowList) {
-                    dataRow.addView(createTextView(value.toString()))
+                    dataRow.addView(createTextView("%.2f cm".format(value)))
                 }
 
                 tableLayout.addView(dataRow)

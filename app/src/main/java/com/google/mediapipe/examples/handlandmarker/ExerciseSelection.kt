@@ -9,75 +9,94 @@ import android.widget.EditText
 import android.widget.RadioButton
 import android.widget.RadioGroup
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import java.net.IDN
 
 
 class ExerciseSelection : AppCompatActivity() {
 
     private lateinit var buttonNext: Button
-
-    private lateinit var radioGroup: RadioGroup
-    private lateinit var radioButton: RadioButton
+    private lateinit var radioGroupExercise: RadioGroup
+    private lateinit var radioGroupLevel: RadioGroup
     private lateinit var textView: TextView
     private lateinit var textView2: TextView
+    private var exerciseID=-1
+    private var difficultyID=-1
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_selection)
-        radioGroup = findViewById(R.id.radioGroupLevel)
+
+        radioGroupExercise = findViewById(R.id.radioGroupExercise)
+        radioGroupLevel = findViewById(R.id.radioGroupLevel)
         textView = findViewById(R.id.text_view_selected)
         textView2 = findViewById(R.id.text_view_selected2)
-
-        // Initialize views
         buttonNext = findViewById(R.id.buttonNext)
 
 
+        val exerciseMapping = mapOf(
+            0 to 1,
+            1 to 3,
+            2 to 6
+        )
 
-//        buttonApply.setOnClickListener {
-//            val radioId = radioGroup.checkedRadioButtonId
-//            radioButton = findViewById(radioId)
-//            textView.text = "Your choice: " + radioButton.text
-//        }
 
-        val radioGroup: RadioGroup = findViewById(R.id.radioGroupExercise)
+        // Set the listener for the exercise RadioGroup
+        radioGroupExercise.setOnCheckedChangeListener { _, checkedId ->
+            val radioButton = findViewById<RadioButton>(checkedId)
 
-        for (i in 0 until radioGroup.childCount) {
-            val radioButton: RadioButton = radioGroup.getChildAt(i) as RadioButton
-            radioButton.setOnClickListener {
-                // Perform actions when any RadioButton is clicked
-                // For example, you can retrieve the text of the clicked RadioButton:
-                val selectedText: String = radioButton.text.toString()
-                textView.text = "Selected Exercise: $selectedText"
-                // Or you can call a function or perform any other actions you need.
-            }
+            exerciseID = exerciseMapping[radioGroupExercise.indexOfChild(radioButton)]!!
+
+            textView.text = "Selected Exercise: ${radioButton.text}"
         }
 
-
-        val radioGroup2: RadioGroup = findViewById(R.id.radioGroupLevel)
-        for (i in 0 until radioGroup2.childCount) {
-            val radioButton: RadioButton = radioGroup2.getChildAt(i) as RadioButton
-            radioButton.setOnClickListener {
-                // Perform actions when any RadioButton is clicked
-                // For example, you can retrieve the text of the clicked RadioButton:
-                val selectedText: String = radioButton.text.toString()
-                textView2.text = "Selected Difficulty: $selectedText"
-                // Or you can call a function or perform any other actions you need.
-            }
+        // Set the listener for the level RadioGroup
+        radioGroupLevel.setOnCheckedChangeListener { _, checkedId ->
+            val radioButton = findViewById<RadioButton>(checkedId)
+            difficultyID = radioGroupLevel.indexOfChild(radioButton)
+            textView2.text = "Selected Difficulty: ${radioButton.text}"
         }
-
-
 
         // Set click listener for Next button
+// Set click listener for Next button
         buttonNext.setOnClickListener {
-            val exerciseValue = textView.text.toString()
-            val difficultyValue = textView2.text.toString()
+            val exerciseValue = textView.text.toString().replace("Selected Exercise: ", "")
+            val difficultyValue = textView2.text.toString().replace("Selected Difficulty: ", "")
 
-            // Create an intent to start the next activity
-            val intent = Intent(this@ExerciseSelection, MainActivity::class.java)
-            intent.putExtra("exercise", exerciseValue)
-            intent.putExtra("difficulty", difficultyValue)
+            // Check if exerciseValue and difficultyValue are not null
+            if (exerciseID!=-1 && difficultyID!=-1) {
 
-            startActivity(intent)
+                // Create an intent to start the next activity
+                val intent = Intent(this@ExerciseSelection, MainActivity::class.java)
+                intent.putExtra("exercise", exerciseValue)
+                intent.putExtra("difficulty", difficultyValue)
+                intent.putExtra("exerciseID", exerciseID)
+                intent.putExtra("difficultyID", difficultyID)
+
+                startActivity(intent)
+            } else {
+                if(exerciseID==-1 && difficultyID==-1){
+                    Toast.makeText(this@ExerciseSelection, "Exercise and difficulty values are missing", Toast.LENGTH_SHORT).show()
+                }else {
+                    // Display toast for missing values
+                    if (exerciseID == -1) {
+                        Toast.makeText(
+                            this@ExerciseSelection,
+                            "Exercise value is missing",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                    if (difficultyID == -1) {
+                        Toast.makeText(
+                            this@ExerciseSelection,
+                            "Difficulty value is missing",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
+            }
         }
     }
 }
