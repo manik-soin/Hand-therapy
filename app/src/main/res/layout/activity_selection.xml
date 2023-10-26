@@ -1,112 +1,135 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="16dp"
     android:background="#FFFFFF">
 
-    <TextView
-        android:id="@+id/page_title"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="27dp"
-        android:text="Fine Motor Exercises"
-        android:textSize="30sp"
-        android:textStyle="bold"
-        android:textColor="#000000" />
+        android:orientation="vertical"
+        android:padding="16dp">
 
-
-    <RadioGroup
-        android:id="@+id/radioGroupExercise"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp">
-
-        <RadioButton
-            android:id="@+id/ex1"
+        <TextView
+            android:id="@+id/page_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="1) Active Wrist Extension (Assisted forearm fixation)"
+            android:layout_marginTop="27dp"
+            android:text="Fine Motor Exercises"
+            android:textSize="30sp"
+            android:textStyle="bold"
             android:textColor="#000000" />
 
-        <RadioButton
-            android:id="@+id/ex2"
+        <RadioGroup
+            android:id="@+id/radioGroupExercise"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="3) Active Thumb Abduction + Adduction"
+            android:layout_marginTop="16dp">
+
+            <RadioButton
+                android:id="@+id/ex1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="1) Active Wrist Extension (Assisted forearm fixation)"
+                android:textColor="#000000" />
+
+            <RadioButton
+                android:id="@+id/ex2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="2) Active and Assisted Forearm Supination "
+                android:textColor="#000000" />
+
+            <RadioButton
+                android:id="@+id/ex3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="3) Active Thumb Abduction + Adduction"
+                android:textColor="#000000" />
+
+            <RadioButton
+                android:id="@+id/ex4"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="4) Active Wrist Extension (Assisted forearm fixation)"
+                android:textColor="#000000" />
+
+            <RadioButton
+                android:id="@+id/ex5"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="5) Active Wrist Extension (Assisted forearm fixation)"
+                android:textColor="#000000" />
+
+            <RadioButton
+                android:id="@+id/ex6"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="6) Active Finger Opposition"
+                android:textColor="#000000" />
+
+        </RadioGroup>
+
+        <TextView
+            android:id="@+id/text_view_selected"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="27dp"
+            android:text="Select an exercise"
+            android:textSize="20sp"
+            android:textStyle="bold"
             android:textColor="#000000" />
 
-        <RadioButton
-            android:id="@+id/ex3"
+        <RadioGroup
+            android:id="@+id/radioGroupLevel"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="6) Active Finger Opposition"
-            android:textColor="#000000" />
+            android:layout_marginTop="16dp">
 
-    </RadioGroup>
+            <RadioButton
+                android:id="@+id/radio_one"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Bronze"
+                android:textColor="#000000" />
 
+            <RadioButton
+                android:id="@+id/radio_two"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Silver"
+                android:textColor="#000000" />
 
-    <TextView
-        android:id="@+id/text_view_selected"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="27dp"
-        android:text="Select an exercise"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        android:textColor="#000000" />
+            <RadioButton
+                android:id="@+id/radio_three"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Gold"
+                android:textColor="#000000" />
 
+        </RadioGroup>
 
-    <RadioGroup
-        android:id="@+id/radioGroupLevel"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp">
-
-        <RadioButton
-            android:id="@+id/radio_one"
+        <TextView
+            android:id="@+id/text_view_selected2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Bronze"
+            android:layout_marginTop="27dp"
+            android:text="Select a difficulty"
+            android:textSize="20sp"
+            android:textStyle="bold"
             android:textColor="#000000" />
 
-        <RadioButton
-            android:id="@+id/radio_two"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Silver"
-            android:textColor="#000000" />
+        <Button
+            android:id="@+id/buttonNext"
+            android:layout_width="176dp"
+            android:layout_height="94dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="32dp"
+            android:text="Next"
+            android:textColor="#FFFFFF"
+            android:background="#FF4081"
+            android:textSize="24sp" />
 
-        <RadioButton
-            android:id="@+id/radio_three"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Gold"
-            android:textColor="#000000" />
+    </LinearLayout>
 
-    </RadioGroup>
-
-
-    <TextView
-        android:id="@+id/text_view_selected2"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="27dp"
-        android:text="Select a difficulty"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        android:textColor="#000000" />
-
-    <Button
-        android:id="@+id/buttonNext"
-        android:layout_width="176dp"
-        android:layout_height="94dp"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="32dp"
-        android:text="Next"
-        android:textColor="#FFFFFF"
-        android:background="#FF4081"
-        android:textSize="24sp" />
-
-</LinearLayout>
+</ScrollView>

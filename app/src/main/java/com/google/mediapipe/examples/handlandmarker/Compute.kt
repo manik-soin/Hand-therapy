@@ -44,6 +44,26 @@ class Compute {
 
 
     }
+    fun angle3ds_static(landmark1: MutableList<NormalizedLandmark>,landmark: MutableList<NormalizedLandmark>, a: Int, b: Int, c: Int): Float {
+
+        val vector1X = landmark[a].x() - landmark1[b].x()
+        val vector1Y = landmark[a].y() - landmark1[b].y()
+        val vector1Z = landmark[a].z() - landmark1[b].z()
+
+        val vector2X = landmark1[c].x() - landmark1[b].x()
+        val vector2Y = landmark1[c].y() - landmark1[b].y()
+        val vector2Z = landmark1[c].z() - landmark1[b].z()
+
+        val dotProduct = vector1X * vector2X + vector1Y * vector2Y + vector1Z * vector2Z
+        val magnitude1 = sqrt(vector1X * vector1X + vector1Y * vector1Y + vector1Z * vector1Z)
+        val magnitude2 = sqrt(vector2X * vector2X + vector2Y * vector2Y + vector2Z * vector2Z)
+
+        val cosine = dotProduct / (magnitude1 * magnitude2)
+
+        return Math.toDegrees(Math.acos(cosine.toDouble())).toFloat()
+
+
+    }
 
 
 

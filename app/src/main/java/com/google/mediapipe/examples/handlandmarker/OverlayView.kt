@@ -36,6 +36,7 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Rect
 import android.os.CountDownTimer
+import com.google.mediapipe.tasks.components.containers.NormalizedLandmark
 import java.io.Serializable
 
 
@@ -54,12 +55,30 @@ class OverlayView(context: Context?, attrs: AttributeSet?) :
     private var scaleFactor: Float = 1f
     private var imageWidth: Int = 1
     private var imageHeight: Int = 1
+    private val mainActivity = context as? MainActivity
+    private val exerciseValue = mainActivity?.getExerciseValue()//exercise value
 
+    private val difficultyValue = mainActivity?.getDifficultyValue()//difficulty value
+
+    private val exerciseID = mainActivity?.getExerciseID()//exercise id
+
+
+    val difficultyID = mainActivity?.getDifficultyID()//difficulty id
 
 
     init {
         initPaints()
-        val imageResId = R.drawable.palm_left
+
+
+
+
+        val imageResId = if(exerciseID==1) {
+            R.drawable.palm_down
+        }
+        else{
+            R.drawable.palm_left
+            }
+
         imageBitmap = BitmapFactory.decodeResource(resources, imageResId)
     }
 
@@ -171,33 +190,57 @@ class OverlayView(context: Context?, attrs: AttributeSet?) :
     }
     private var ft=true
     private var dflag=true
+    private var aflag=true
     private var validation_complete=false
     private var touch_flag=true
     private var reps =0
     private var maxdistance =0f
     private var dvalue =5f
     private var mindistance =9999f
+
+
+    private var maxAngle =0f
+    private var avalue =30f
+    private var minAngle =9999f
+
     val stats = mutableListOf(
         mutableListOf<Float>(),
         mutableListOf<Float>(),
     )
+    private lateinit var landmark1: MutableList<NormalizedLandmark>
+    private var e1_ft=true
 
 
 
     override fun draw(canvas: Canvas) {
         super.draw(canvas)
-        var sf2 = if (canvas.height<canvas.width){
-            canvas.height/imageBitmap.height
+//        var sf2 = if (canvas.height<canvas.width){
+//            canvas.height/imageBitmap.height
+//        } else{
+//            canvas.width/imageBitmap.width
+//        }
+        var imagesize = if (canvas.height<canvas.width){
+            (canvas.height/1.5).toInt()
         } else{
-            canvas.width/imageBitmap.width
+            (canvas.width/1.5).toInt()
         }
+//        canvas.drawText("h: ${canvas.height}",100f,150f,textPaint)
+//        canvas.drawText("w: ${canvas.width}",100f,200f,textPaint)
 
+
+//        // Calculate the position to draw the image
+//        val x1 = (canvas.width - imageBitmap.width *sf2 ) / 2f - 10f
+//        val y1 = (canvas.height - imageBitmap.height*sf2  ) / 2f - 10f
+//        val x2 = (canvas.width + imageBitmap.width *sf2 ) / 2f + 10f
+//        val y2 = (canvas.height + imageBitmap.height*sf2  ) / 2f + 10f
 
         // Calculate the position to draw the image
-        val x1 = (canvas.width - imageBitmap.width *sf2 ) / 2f - 10f
-        val y1 = (canvas.height - imageBitmap.height*sf2  ) / 2f - 10f
-        val x2 = (canvas.width + imageBitmap.width *sf2 ) / 2f + 10f
-        val y2 = (canvas.height + imageBitmap.height*sf2  ) / 2f + 10f
+        val x1 = (canvas.width - imagesize ) / 2f - 10f
+        val y1 = (canvas.height - imagesize  ) / 2f - 10f
+        val x2 = (canvas.width + imagesize ) / 2f + 10f
+        val y2 = (canvas.height + imagesize  ) / 2f + 10f
+//        canvas.drawText("($x1,$y1)",x1,y1,textPaint)
+
 
         //red rectangle coordinates
         val x3 = x1 + (x2 - x1) * .25
@@ -206,31 +249,20 @@ class OverlayView(context: Context?, attrs: AttributeSet?) :
         val y4 = y2 - (y2 - y1) * .25
 
         //getting the extra intent from EXERCISE SELECTION
-        val mainActivity = context as? MainActivity
-        val exerciseValue = mainActivity?.getExerciseValue()//exercise value
-
-        val difficultyValue = mainActivity?.getDifficultyValue()//difficulty value
-
-//        val exerciseID = mainActivity?.getExerciseID()//exercise value
-//        if (exerciseID != null) {
-//            canvas.drawText(exerciseID.toString(), 400f, 500f, textPaint)
-//        }
-//
-//        val difficultyID = mainActivity?.getDifficultyID()//exercise value
-//        if (exerciseID != null) {
-//            canvas.drawText(difficultyID.toString(), 500f, 500f, textPaint)
-//        }
 
 
-
-
-
-
+//        // Scale the bitmap
+//        val scaledBitmap = Bitmap.createScaledBitmap(
+//            imageBitmap,
+//            imageBitmap.width *sf2 ,
+//            imageBitmap.height *sf2 ,
+//            true
+//        )
         // Scale the bitmap
         val scaledBitmap = Bitmap.createScaledBitmap(
             imageBitmap,
-            imageBitmap.width *sf2 ,
-            imageBitmap.height *sf2 ,
+            imagesize ,
+            imagesize ,
             true
         )
 
@@ -269,16 +301,17 @@ class OverlayView(context: Context?, attrs: AttributeSet?) :
 
         results?.let { handLandmarkerResult ->
             for (landmark in handLandmarkerResult.landmarks()) {
-                //val d=DataInput(landmark)
-                val validated=v.validate(landmark, x1,y1, x2, y2,imageWidth,imageHeight,scaleFactor)
 
-                val pointsToConsider = arrayOf(4,1,8)
-                //val pointsToConsider2 = arrayOf(0,5)//this is for the longest line reference
+
+
+                val pointsToConsider = arrayOf(4,1,8)//currently only to color differently
                 val points = mutableListOf<Triple<Float, Float, Float>>()
-                val points2 = mutableListOf<Triple<Float, Float, Float>>()
 
 
-                val ang=c.angle3ds(landmark,4,1,8)
+
+
+
+
 
                 for ((a, normalizedLandmark) in landmark.withIndex()) {//consider all points in landmark
                     when (a) {//a goes from 0 to 21
@@ -300,6 +333,11 @@ class OverlayView(context: Context?, attrs: AttributeSet?) :
                     }
                 }
 
+                val validated=if(exerciseID==1){
+                    v.validate_1(landmark, y1, y2,imageWidth,imageHeight,scaleFactor)}
+                else{
+                    v.validate(landmark, x1,y1, x2, y2,imageWidth,imageHeight,scaleFactor)
+                }
 
                 if(validated && !validation_complete){
 
@@ -326,87 +364,329 @@ class OverlayView(context: Context?, attrs: AttributeSet?) :
                     val (x3, y3, z3) = points[2]
                     canvas.drawLine(x1, y1, x2, y2, linePaint2)
                     canvas.drawLine(x2, y2, x3, y3, linePaint2)
+
+
+
+
                     drawDashedLine(canvas, x1, y1, x3, y3)
 
 
-                    val angletext = "Angle: %.2f".format(ang)
-                    //c.angle(landmark)
+                    if(exerciseID==1){
 
-                    canvas.drawText(angletext, x2, y2 - 50, textPaint)
-
-
-                    val distanceInCm = (c.distance3ds(
-                        landmark,
-                        4,
-                        8,
-                        imageWidth,
-                        imageHeight,
-                        scaleFactor
-                    ) * 2 / c.distance3ds(landmark, 7, 8, imageWidth, imageHeight, scaleFactor)) - 1
-
-
-                    val text2 = "Distance: %.2f cm".format(distanceInCm)
-
-                    //for stats
-                    if (distanceInCm < mindistance) {
-                        mindistance = distanceInCm
-                    }
-                    if (distanceInCm > maxdistance) {
-                        maxdistance = distanceInCm
-                    }
-
-
-                    touch_flag = if (distanceInCm < 1f) {//touched?
-
-
-                        if (touch_flag && dflag) {
-
-                            reps++
-
-                            stats[0].add(mindistance)
-
-                            stats[1].add(maxdistance)
-                            dflag=false
-
-                            mindistance = 9999f//reset for new rep
-                            maxdistance = 0f
+                        if(e1_ft){
+                            landmark1 = landmark
                         }
-                        false
+                        e1_ft=false
+
+                        println(landmark1)
+                        val calculatedAngle = c.angle3ds_static(landmark1,landmark, 17, 0, 17)
 
 
-                    } else {
-                        true
+                        val angleText = "Angle: %.2f".format(calculatedAngle)
+                        //c.angle(landmark)
+
+                        canvas.drawText(angleText, x2, y2 - 50, textPaint)
+
+                        if (calculatedAngle < minAngle) {
+                            minAngle = calculatedAngle
+                        }
+                        if (calculatedAngle > maxAngle) {
+                            maxAngle = calculatedAngle
+                        }
+
+                        touch_flag = if (calculatedAngle > 60f) {//touched?
+
+
+                            if (touch_flag && aflag) {
+
+                                reps++
+
+                                stats[0].add(minAngle)
+
+                                stats[1].add(maxAngle)
+                                dflag=false
+
+                                minAngle = 9999f//reset for new rep
+                                maxAngle = 0f
+                            }
+                            false
+
+
+                        } else {
+                            true
+                        }
+
+                        if (calculatedAngle < 20f) {//this is basically a reset for the new turn to make sure we did not just move a little bit
+                            aflag=true
+                        }
+
+
+
+                        if (reps == 5) {
+
+                            displayConfetti(canvas)
+                            canvas.drawText(
+                                "W E L L   D O N E !  : )",
+                                ((x1 + x3) / 2) + 100,
+                                ((y1 + y3) / 2) + 100,
+                                textPaint2
+                            )
+
+                            val context = context
+
+                            // Create an Intent for the target activity
+                            val intent =
+                                Intent(context, StatsActivity::class.java)//EXERCISE SELECTION
+                            intent.putExtra("listValues", stats as Serializable)
+                            intent.putExtra("min", "Minimum Angle")
+                            intent.putExtra("max", "Maximum Angle")
+                            intent.putExtra("unit", "deg")
+
+                            // Start the activity
+                            context.startActivity(intent)
+                        }
+
+                    }
+                    if(exerciseID==2){
+
+                        if(e1_ft){
+                            landmark1 = landmark
+                        }
+                        e1_ft=false
+
+                        println(landmark1)
+                        val calculatedAngle = c.angle3ds_static(landmark1,landmark, 4, 9, 4)
+
+
+                        val angleText = "Angle: %.2f".format(calculatedAngle)
+                        //c.angle(landmark)
+
+                        canvas.drawText(angleText, x2, y2 - 50, textPaint)
+
+                        if (calculatedAngle < minAngle) {
+                            minAngle = calculatedAngle
+                        }
+                        if (calculatedAngle > maxAngle) {
+                            maxAngle = calculatedAngle
+                        }
+
+                        touch_flag = if (calculatedAngle > 150f) {//touched?
+
+
+                            if (touch_flag && aflag) {
+
+                                reps++
+
+                                stats[0].add(minAngle)
+
+                                stats[1].add(maxAngle)
+                                dflag=false
+
+                                minAngle = 9999f//reset for new rep
+                                maxAngle = 0f
+                            }
+                            false
+
+
+                        } else {
+                            true
+                        }
+
+                        if (calculatedAngle < 20f) {//this is basically a reset for the new turn to make sure we did not just move a little bit
+                            aflag=true
+                        }
+
+
+
+                        if (reps == 5) {
+
+                            displayConfetti(canvas)
+                            canvas.drawText(
+                                "W E L L   D O N E !  : )",
+                                ((x1 + x3) / 2) + 100,
+                                ((y1 + y3) / 2) + 100,
+                                textPaint2
+                            )
+
+                            val context = context
+
+                            // Create an Intent for the target activity
+                            val intent =
+                                Intent(context, StatsActivity::class.java)//EXERCISE SELECTION
+                            intent.putExtra("listValues", stats as Serializable)
+                            intent.putExtra("min", "Minimum Angle")
+                            intent.putExtra("max", "Maximum Angle")
+                            intent.putExtra("unit", "deg")
+
+                            // Start the activity
+                            context.startActivity(intent)
+                        }
+
                     }
 
-                    if (distanceInCm > dvalue) {
-                        dflag=true
+
+
+
+
+
+
+                    if(exerciseID==3) {
+
+                        val calculatedAngle = c.angle3ds(landmark, 4, 1, 8)
+
+
+                        val angleText = "Angle: %.2f".format(calculatedAngle)
+                        //c.angle(landmark)
+
+                        canvas.drawText(angleText, x2, y2 - 50, textPaint)
+
+                        if (calculatedAngle < minAngle) {
+                            minAngle = calculatedAngle
+                        }
+                        if (calculatedAngle > maxAngle) {
+                            maxAngle = calculatedAngle
+                        }
+
+                        touch_flag = if (calculatedAngle < 10f) {//touched?
+
+
+                            if (touch_flag && aflag) {
+
+                                reps++
+
+                                stats[0].add(minAngle)
+
+                                stats[1].add(maxAngle)
+                                dflag=false
+
+                                minAngle = 9999f//reset for new rep
+                                maxAngle = 0f
+                            }
+                            false
+
+
+                        } else {
+                            true
+                        }
+
+                        if (calculatedAngle > avalue) {//this is basically a reset for the new turn to make sure we did not just move a little bit
+                            aflag=true
+                        }
+
+
+
+                        if (reps == 5) {
+
+                            displayConfetti(canvas)
+                            canvas.drawText(
+                                "W E L L   D O N E !  : )",
+                                ((x1 + x3) / 2) + 100,
+                                ((y1 + y3) / 2) + 100,
+                                textPaint2
+                            )
+
+                            val context = context
+
+                            // Create an Intent for the target activity
+                            val intent = Intent(context, StatsActivity::class.java)//EXERCISE SELECTION
+                            intent.putExtra("listValues", stats as Serializable)
+                            intent.putExtra("min","Minimum Angle")
+                            intent.putExtra("max","Maximum Angle")
+                            intent.putExtra("unit","deg")
+
+                            // Start the activity
+                            context.startActivity(intent)
+
+                        }
+
+
+
+
+
+                    }
+                    if(exerciseID==6){
+
+                        val distanceInCm = (c.distance3ds(
+                            landmark,
+                            4,
+                            8,
+                            imageWidth,
+                            imageHeight,
+                            scaleFactor
+                        ) * 2 / c.distance3ds(landmark, 7, 8, imageWidth, imageHeight, scaleFactor)) - 1
+
+
+                        val distanceText = "Distance: %.2f cm".format(distanceInCm)
+
+                        //for stats
+                        if (distanceInCm < mindistance) {
+                            mindistance = distanceInCm
+                        }
+                        if (distanceInCm > maxdistance) {
+                            maxdistance = distanceInCm
+                        }
+
+
+                        touch_flag = if (distanceInCm < 1f) {//touched?
+
+
+                            if (touch_flag && dflag) {
+
+                                reps++
+
+                                stats[0].add(mindistance)
+
+                                stats[1].add(maxdistance)
+                                dflag=false
+
+                                mindistance = 9999f//reset for new rep
+                                maxdistance = 0f
+                            }
+                            false
+
+
+                        } else {
+                            true
+                        }
+
+                        if (distanceInCm > dvalue) {
+                            dflag=true
+                        }
+
+
+
+                        if (reps == 5) {
+
+                            displayConfetti(canvas)
+                            canvas.drawText(
+                                "W E L L   D O N E !  : )",
+                                ((x1 + x3) / 2) + 100,
+                                ((y1 + y3) / 2) + 100,
+                                textPaint2
+                            )
+
+                            val context = context
+
+                            // Create an Intent for the target activity
+                            val intent = Intent(context, StatsActivity::class.java)//EXERCISE SELECTION
+                            intent.putExtra("listValues", stats as Serializable)
+
+                            intent.putExtra("min","Minimum Distance")
+                            intent.putExtra("max","Maximum Distance")
+                            intent.putExtra("unit","cm")
+
+                            // Start the activity
+                            context.startActivity(intent)
+
+                        }
+
+
+                        canvas.drawText(distanceText, (x1 + x3) / 2, (y1 + y3) / 2, textPaint)
+
+
                     }
 
 
-
-                    if (reps == 5) {
-
-                        displayConfetti(canvas)
-                        canvas.drawText(
-                            "W E L L   D O N E !  : )",
-                            ((x1 + x3) / 2) + 100,
-                            ((y1 + y3) / 2) + 100,
-                            textPaint2
-                        )
-
-                        val context = context
-
-                        // Create an Intent for the target activity
-                        val intent = Intent(context, StatsActivity::class.java)//EXERCISE SELECTION
-                        intent.putExtra("listValues", stats as Serializable)
-
-                        // Start the activity
-                        context.startActivity(intent)
-
-                    }
-
-
-                    canvas.drawText(text2, (x1 + x3) / 2, (y1 + y3) / 2, textPaint)
                 }
 
 

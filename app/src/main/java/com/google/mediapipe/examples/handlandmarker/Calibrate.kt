@@ -21,4 +21,22 @@ class Calibrate {
 
         return false
     }
+
+    fun validate_1(landmark: MutableList<NormalizedLandmark>, y1: Float,  y2: Float, w: Int, h: Int, scaleFactor: Float):Boolean {
+
+        val y3 = y1 + (y2 - y1) * .2
+
+        val y4 = y2 - (y2 - y1) * .2
+        if(y1<landmark[0].y()*h*scaleFactor && landmark[0].y()*h*scaleFactor<y3
+            && y4<landmark[12].y()*h*scaleFactor && landmark[12].y()*h*scaleFactor<y2)
+
+        {
+
+            return true
+        }
+
+
+
+        return false
+    }
 }

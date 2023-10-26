@@ -25,7 +25,9 @@ class StatsActivity : AppCompatActivity() {
 
         println("STATS")
         val receivedList = intent.getSerializableExtra("listValues") as? MutableList<MutableList<Float>>
-
+        val minText = intent.getStringExtra("min")?:"minimum"
+        val maxText = intent.getStringExtra("max")?:"maximum"
+        val unitText = intent.getStringExtra("unit")?:"units"
         if (receivedList != null) {
             val tableLayout: TableLayout = findViewById(R.id.tableLayout)
 
@@ -51,15 +53,15 @@ class StatsActivity : AppCompatActivity() {
 
                 // Set the row title
                 val rowTitle = when (i) {
-                    0 -> "Min Distance"
-                    1 -> "Max Distance"
-                    else -> "Rep ${i}"
+                    0 -> minText
+                    1 -> maxText
+                    else -> "Rep $i"
                 }
                 dataRow.addView(createBoldTextView(rowTitle))
 
                 // Add the data values
                 for (value in rowList) {
-                    dataRow.addView(createTextView("%.2f cm".format(value)))
+                    dataRow.addView(createTextView("%.2f $unitText".format(value)))
                 }
 
                 tableLayout.addView(dataRow)
