@@ -42,7 +42,8 @@ class ExerciseSelection : AppCompatActivity() {
             2 to 3,
             3 to 4,
             4 to 5,
-            5 to 6
+            5 to 6,
+            6 to 7
         )
 
 

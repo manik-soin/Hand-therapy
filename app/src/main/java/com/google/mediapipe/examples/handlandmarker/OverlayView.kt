@@ -139,10 +139,10 @@ class OverlayView(context: Context?, attrs: AttributeSet?) :
 
 
 
-        textPaint.color = Color.BLACK
+        textPaint.color = Color.WHITE
         textPaint.textSize = 42f
         textPaint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
-        textPaint.setShadowLayer(10f, 0f, 0f, Color.WHITE)
+        textPaint.setShadowLayer(10f, 0f, 0f, Color.BLACK)
 
 
         rectPaint.color = Color.RED
@@ -197,6 +197,7 @@ class OverlayView(context: Context?, attrs: AttributeSet?) :
     private var maxdistance =0f
     private var dvalue =5f
     private var mindistance =9999f
+    private var distances1 =mutableMapOf<String, Float>()
 
 
     private var maxAngle =0f
@@ -209,6 +210,9 @@ class OverlayView(context: Context?, attrs: AttributeSet?) :
     )
     private lateinit var landmark1: MutableList<NormalizedLandmark>
     private var e1_ft=true
+    private var e5_ft=true
+    private var fingersClosedBegin=false
+    private var prevFingerStatus = true
 
 
 
@@ -220,9 +224,9 @@ class OverlayView(context: Context?, attrs: AttributeSet?) :
 //            canvas.width/imageBitmap.width
 //        }
         var imagesize = if (canvas.height<canvas.width){
-            (canvas.height/1.5).toInt()
+        (canvas.height/1.4).toInt()
         } else{
-            (canvas.width/1.5).toInt()
+            (canvas.width/1.4).toInt()
         }
 //        canvas.drawText("h: ${canvas.height}",100f,150f,textPaint)
 //        canvas.drawText("w: ${canvas.width}",100f,200f,textPaint)
@@ -304,6 +308,9 @@ class OverlayView(context: Context?, attrs: AttributeSet?) :
 
 
 
+
+
+
                 val pointsToConsider = arrayOf(4,1,8)//currently only to color differently
                 val points = mutableListOf<Triple<Float, Float, Float>>()
 
@@ -379,7 +386,7 @@ class OverlayView(context: Context?, attrs: AttributeSet?) :
                         e1_ft=false
 
                         println(landmark1)
-                        val calculatedAngle = c.angle3ds_static(landmark1,landmark, 17, 0, 17)
+                        var calculatedAngle = c.angle3ds_static(landmark1,landmark, 17, 0, 17)
 
 
                         val angleText = "Angle: %.2f".format(calculatedAngle)
@@ -404,7 +411,7 @@ class OverlayView(context: Context?, attrs: AttributeSet?) :
                                 stats[0].add(minAngle)
 
                                 stats[1].add(maxAngle)
-                                dflag=false
+                                aflag=false
 
                                 minAngle = 9999f//reset for new rep
                                 maxAngle = 0f
@@ -455,7 +462,7 @@ class OverlayView(context: Context?, attrs: AttributeSet?) :
                         e1_ft=false
 
                         println(landmark1)
-                        val calculatedAngle = c.angle3ds_static(landmark1,landmark, 4, 9, 4)
+                        var calculatedAngle = c.angle3ds_static(landmark1,landmark, 4, 9, 4)
 
 
                         val angleText = "Angle: %.2f".format(calculatedAngle)
@@ -480,7 +487,7 @@ class OverlayView(context: Context?, attrs: AttributeSet?) :
                                 stats[0].add(minAngle)
 
                                 stats[1].add(maxAngle)
-                                dflag=false
+                                aflag=false
 
                                 minAngle = 9999f//reset for new rep
                                 maxAngle = 0f
@@ -532,7 +539,7 @@ class OverlayView(context: Context?, attrs: AttributeSet?) :
 
                     if(exerciseID==3) {
 
-                        val calculatedAngle = c.angle3ds(landmark, 4, 1, 8)
+                        var calculatedAngle = c.angle3ds(landmark, 4, 1, 8)
 
 
                         val angleText = "Angle: %.2f".format(calculatedAngle)
@@ -555,9 +562,8 @@ class OverlayView(context: Context?, attrs: AttributeSet?) :
                                 reps++
 
                                 stats[0].add(minAngle)
-
                                 stats[1].add(maxAngle)
-                                dflag=false
+                                aflag=false
 
                                 minAngle = 9999f//reset for new rep
                                 maxAngle = 0f
@@ -604,6 +610,86 @@ class OverlayView(context: Context?, attrs: AttributeSet?) :
 
 
                     }
+
+                    if(exerciseID==4 || exerciseID==5){
+
+
+//                        var angles = mutableMapOf<String, Float>()
+//                        angles["Th1"] = c.angle3ds(landmark, 1, 2, 3)
+//                        angles["Th2"] = c.angle3ds(landmark, 2, 3, 4)
+//                        angles["IF1"] = c.angle3ds(landmark, 0, 5, 6)
+//                        angles["IF2"] = c.angle3ds(landmark, 5, 6, 7)
+//                        angles["IF3"] = c.angle3ds(landmark, 6, 7, 8)
+//                        angles["MF1"] = c.angle3ds(landmark, 0, 9, 10)
+//                        angles["MF2"] = c.angle3ds(landmark, 9, 10, 11)
+//                        angles["MF3"] = c.angle3ds(landmark, 10, 11, 12)
+//                        angles["RF1"] = c.angle3ds(landmark, 0, 13, 14)
+//                        angles["RF2"] = c.angle3ds(landmark, 13, 14, 15)
+//                        angles["RF3"] = c.angle3ds(landmark, 14, 15, 16)
+//                        angles["LF1"] = c.angle3ds(landmark, 0, 17, 18)
+//                        angles["LF2"] = c.angle3ds(landmark, 17, 18, 19)
+//                        angles["LF3"] = c.angle3ds(landmark, 18, 19, 20)
+
+
+
+
+
+                        var distances =mutableMapOf<String, Float>()
+                        distances["Thumb"]=c.distance3ds(landmark,0,4,imageWidth,imageHeight, scaleFactor)
+                        distances["Index"]=c.distance3ds(landmark,0,8,imageWidth,imageHeight, scaleFactor)
+                        distances["Middle"]=c.distance3ds(landmark,0,12,imageWidth,imageHeight, scaleFactor)
+                        distances["Right"]=c.distance3ds(landmark,0,16,imageWidth,imageHeight, scaleFactor)
+                        distances["Pinky"]=c.distance3ds(landmark,0,20,imageWidth,imageHeight, scaleFactor)
+
+
+                        if(e5_ft){
+                            distances1=distances
+                        }
+                        e5_ft=false
+
+
+
+
+                        var fingerClosed =mutableMapOf<String, Boolean>()
+                        fingerClosed["Thumb"]=c.distance3ds(landmark,0,4,imageWidth,imageHeight, scaleFactor)< distances1["Thumb"]!! *0.8
+                        fingerClosed["Index"]=c.distance3ds(landmark,0,8,imageWidth,imageHeight, scaleFactor)< distances1["Index"]!! *0.7
+                        fingerClosed["Middle"]=c.distance3ds(landmark,0,12,imageWidth,imageHeight, scaleFactor)< distances1["Middle"]!!*0.7
+                        fingerClosed["Right"]=c.distance3ds(landmark,0,16,imageWidth,imageHeight, scaleFactor)< distances1["Right"]!!*0.7
+                        fingerClosed["Pinky"]=c.distance3ds(landmark,0,20,imageWidth,imageHeight, scaleFactor)< distances1["Pinky"]!!*0.7
+
+
+
+                        var y = 320f
+                        fingerClosed.forEach { (key, value) ->
+                            val text = "$key: $value"
+                            canvas.drawText(text, 20f, y, textPaint)
+                            y += 40f
+                        }
+                        val allFingersClosed = fingerClosed.values.all { it }
+
+                        if (allFingersClosed) {
+                            canvas.drawText("All values are true.",320f, 180f, textPaint2)
+                            fingersClosedBegin=true
+                        }else if(!fingersClosedBegin){canvas.drawText("close all your fingers",320f, 180f, textPaint)}
+
+
+
+                        for ((finger, status) in fingerClosed) {
+                            if (status && !prevFingerStatus && !status) {
+                                println("Finger opened: $finger")
+                            }
+                        }
+
+                        prevFingerStatus = fingerClosed.values.any { it }
+
+
+
+
+
+                    }
+
+
+
                     if(exerciseID==6){
 
                         val distanceInCm = (c.distance3ds(
@@ -650,7 +736,7 @@ class OverlayView(context: Context?, attrs: AttributeSet?) :
                         }
 
                         if (distanceInCm > dvalue) {
-                            dflag=true
+                            true
                         }
 
 

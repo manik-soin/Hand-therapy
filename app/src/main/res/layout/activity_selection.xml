@@ -51,14 +51,14 @@
                 android:id="@+id/ex4"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="4) Active Wrist Extension (Assisted forearm fixation)"
+                android:text="4)  Active Isolated Finger Extension "
                 android:textColor="#000000" />
 
             <RadioButton
                 android:id="@+id/ex5"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="5) Active Wrist Extension (Assisted forearm fixation)"
+                android:text="5)  Active Finger Flexion and (isolated) Finger Extension"
                 android:textColor="#000000" />
 
             <RadioButton
@@ -66,6 +66,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="6) Active Finger Opposition"
+                android:textColor="#000000" />
+
+            <RadioButton
+                android:id="@+id/ex7"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="7) Finger Exercise"
                 android:textColor="#000000" />
 
         </RadioGroup>
