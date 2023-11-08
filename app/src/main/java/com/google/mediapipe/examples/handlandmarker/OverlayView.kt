@@ -212,7 +212,19 @@ class OverlayView(context: Context?, attrs: AttributeSet?) :
     private var e1_ft=true
     private var e5_ft=true
     private var fingersClosedBegin=false
-    private var prevFingerStatus = true
+    private var flexPoint = mutableMapOf<String, Boolean>().apply {
+        this["Thumb"] = false
+        this["Index"] = false
+        this["Middle"] = false
+        this["Right"] = false
+        this["Pinky"] = false
+    }
+
+    private var e5_touch_flag=true
+
+
+
+
 
 
 
@@ -477,7 +489,7 @@ class OverlayView(context: Context?, attrs: AttributeSet?) :
                             maxAngle = calculatedAngle
                         }
 
-                        touch_flag = if (calculatedAngle > 150f) {//touched?
+                        touch_flag = if (calculatedAngle > 100f) {//touched?
 
 
                             if (touch_flag && aflag) {
@@ -614,24 +626,6 @@ class OverlayView(context: Context?, attrs: AttributeSet?) :
                     if(exerciseID==4 || exerciseID==5){
 
 
-//                        var angles = mutableMapOf<String, Float>()
-//                        angles["Th1"] = c.angle3ds(landmark, 1, 2, 3)
-//                        angles["Th2"] = c.angle3ds(landmark, 2, 3, 4)
-//                        angles["IF1"] = c.angle3ds(landmark, 0, 5, 6)
-//                        angles["IF2"] = c.angle3ds(landmark, 5, 6, 7)
-//                        angles["IF3"] = c.angle3ds(landmark, 6, 7, 8)
-//                        angles["MF1"] = c.angle3ds(landmark, 0, 9, 10)
-//                        angles["MF2"] = c.angle3ds(landmark, 9, 10, 11)
-//                        angles["MF3"] = c.angle3ds(landmark, 10, 11, 12)
-//                        angles["RF1"] = c.angle3ds(landmark, 0, 13, 14)
-//                        angles["RF2"] = c.angle3ds(landmark, 13, 14, 15)
-//                        angles["RF3"] = c.angle3ds(landmark, 14, 15, 16)
-//                        angles["LF1"] = c.angle3ds(landmark, 0, 17, 18)
-//                        angles["LF2"] = c.angle3ds(landmark, 17, 18, 19)
-//                        angles["LF3"] = c.angle3ds(landmark, 18, 19, 20)
-
-
-
 
 
                         var distances =mutableMapOf<String, Float>()
@@ -642,20 +636,21 @@ class OverlayView(context: Context?, attrs: AttributeSet?) :
                         distances["Pinky"]=c.distance3ds(landmark,0,20,imageWidth,imageHeight, scaleFactor)
 
 
+
+
+
                         if(e5_ft){
                             distances1=distances
                         }
                         e5_ft=false
 
-
-
-
                         var fingerClosed =mutableMapOf<String, Boolean>()
-                        fingerClosed["Thumb"]=c.distance3ds(landmark,0,4,imageWidth,imageHeight, scaleFactor)< distances1["Thumb"]!! *0.8
-                        fingerClosed["Index"]=c.distance3ds(landmark,0,8,imageWidth,imageHeight, scaleFactor)< distances1["Index"]!! *0.7
-                        fingerClosed["Middle"]=c.distance3ds(landmark,0,12,imageWidth,imageHeight, scaleFactor)< distances1["Middle"]!!*0.7
-                        fingerClosed["Right"]=c.distance3ds(landmark,0,16,imageWidth,imageHeight, scaleFactor)< distances1["Right"]!!*0.7
-                        fingerClosed["Pinky"]=c.distance3ds(landmark,0,20,imageWidth,imageHeight, scaleFactor)< distances1["Pinky"]!!*0.7
+                        fingerClosed["Thumb"]=c.distance3ds(landmark,0,4,imageWidth,imageHeight, scaleFactor)< distances1["Thumb"]!! *0.85
+                        fingerClosed["Index"]=c.distance3ds(landmark,0,8,imageWidth,imageHeight, scaleFactor)< distances1["Index"]!! *0.85
+                        fingerClosed["Middle"]=c.distance3ds(landmark,0,12,imageWidth,imageHeight, scaleFactor)< distances1["Middle"]!!*0.85
+                        fingerClosed["Right"]=c.distance3ds(landmark,0,16,imageWidth,imageHeight, scaleFactor)< distances1["Right"]!!*0.85
+                        fingerClosed["Pinky"]=c.distance3ds(landmark,0,20,imageWidth,imageHeight, scaleFactor)< distances1["Pinky"]!!*0.85
+
 
 
 
@@ -666,21 +661,101 @@ class OverlayView(context: Context?, attrs: AttributeSet?) :
                             y += 40f
                         }
                         val allFingersClosed = fingerClosed.values.all { it }
+                        val allFingersFlexed = fingerClosed.values.all { !it }
 
                         if (allFingersClosed) {
-                            canvas.drawText("All values are true.",320f, 180f, textPaint2)
+                            canvas.drawText("All fingers Closed",900f, 180f, textPaint)
                             fingersClosedBegin=true
-                        }else if(!fingersClosedBegin){canvas.drawText("close all your fingers",320f, 180f, textPaint)}
+                            e5_touch_flag=true
 
-
-
-                        for ((finger, status) in fingerClosed) {
-                            if (status && !prevFingerStatus && !status) {
-                                println("Finger opened: $finger")
+                        }else if(!fingersClosedBegin){
+                            canvas.drawText("close all your fingers",400f, 180f, textPaint2)
+                        }
+                        if(fingersClosedBegin){
+                            if(fingerClosed["Thumb"]==true) {
+                                canvas.drawText("Flex thumb", 400f, 180f, textPaint2)
                             }
+                            else if(fingerClosed["Thumb"]==false
+                                &&fingerClosed["Index"]==true
+                                &&fingerClosed["Middle"]==true
+                                &&fingerClosed["Right"]==true
+                                &&fingerClosed["Pinky"]==true
+                                ){
+                                canvas.drawText("Flex Index", 400f, 180f, textPaint2)
+                                flexPoint["Thumb"]=true
+                            }
+                            else if(fingerClosed["Thumb"]==false
+                                &&fingerClosed["Index"]==false
+                                &&fingerClosed["Middle"]==true
+                                &&fingerClosed["Right"]==true
+                                &&fingerClosed["Pinky"]==true
+                            ){
+                                canvas.drawText("Flex Middle", 400f, 180f, textPaint2)
+                                flexPoint["Index"]=true
+                            }
+                            else if(fingerClosed["Thumb"]==false
+                                &&fingerClosed["Index"]==false
+                                &&fingerClosed["Middle"]==false
+                                &&fingerClosed["Right"]==true
+                                &&fingerClosed["Pinky"]==true
+                            ){
+                                canvas.drawText("Flex Right", 400f, 180f, textPaint2)
+                                flexPoint["Middle"]=true
+                            }
+                            else if(fingerClosed["Thumb"]==false
+                                &&fingerClosed["Index"]==false
+                                &&fingerClosed["Middle"]==false
+                                &&fingerClosed["Right"]==false
+                                &&fingerClosed["Pinky"]==true
+                            ){
+                                canvas.drawText("Flex Pinky", 400f, 180f, textPaint2)
+                                flexPoint["Right"]=true
+                            }
+                            else if(allFingersFlexed){
+                                flexPoint["Pinky"]=true
+
+                                if(flexPoint.values.all { it }){
+                                canvas.drawText("Complete", 400f, 180f, textPaint2)
+                                    if(e5_touch_flag) {
+                                        reps++
+                                        e5_touch_flag=false
+
+                                    }
+                                }
+
+                            }
+
+
+                        }
+                        canvas.drawText("comp val $allFingersFlexed, $flexPoint", 300f, 1000f, textPaint)
+
+                        if (reps == 2) {
+
+                            displayConfetti(canvas)
+                            canvas.drawText(
+                                "W E L L   D O N E !  : )",
+                                ((x1 + x3) / 2) + 100,
+                                ((y1 + y3) / 2) + 100,
+                                textPaint2
+                            )
+
+                            val context = context
+
+                            // Create an Intent for the target activity
+                            val intent = Intent(context, StatsActivity::class.java)//EXERCISE SELECTION
+                            intent.putExtra("listValues", stats as Serializable)
+                            intent.putExtra("min","Minimum Angle")
+                            intent.putExtra("max","Maximum Angle")
+                            intent.putExtra("unit","deg")
+
+                            // Start the activity
+                            context.startActivity(intent)
+
                         }
 
-                        prevFingerStatus = fingerClosed.values.any { it }
+
+
+
 
 
 
@@ -736,7 +811,7 @@ class OverlayView(context: Context?, attrs: AttributeSet?) :
                         }
 
                         if (distanceInCm > dvalue) {
-                            true
+                            dflag=true
                         }
 
 
