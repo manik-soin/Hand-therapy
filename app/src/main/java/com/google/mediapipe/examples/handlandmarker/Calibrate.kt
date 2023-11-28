@@ -35,8 +35,6 @@ class Calibrate {
             return true
         }
 
-
-
         return false
     }
 }

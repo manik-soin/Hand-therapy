@@ -39,7 +39,7 @@ class StatsActivity : AppCompatActivity() {
 
             // Add the column headers
             for (i in receivedList[0].indices) {
-                val title = "Rep ${i + 1}"
+                val title = "${i + 1}"
                 titleRow.addView(createBoldTextView(title))
             }
 
@@ -55,7 +55,7 @@ class StatsActivity : AppCompatActivity() {
                 val rowTitle = when (i) {
                     0 -> minText
                     1 -> maxText
-                    else -> "Rep $i"
+                    else -> ""
                 }
                 dataRow.addView(createBoldTextView(rowTitle))
 
