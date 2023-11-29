@@ -23,7 +23,10 @@ import android.graphics.BitmapFactory
 import android.graphics.Rect
 import android.os.CountDownTimer
 import com.google.mediapipe.examples.handlandmarker.handexercise.H1
-
+import com.google.mediapipe.examples.handlandmarker.handexercise.H2
+import com.google.mediapipe.examples.handlandmarker.handexercise.H3
+import com.google.mediapipe.examples.handlandmarker.handexercise.H5
+import com.google.mediapipe.examples.handlandmarker.handexercise.H6
 import com.google.mediapipe.tasks.components.containers.NormalizedLandmark
 import java.io.Serializable
 
@@ -124,7 +127,7 @@ class OverlayView(context: Context?, attrs: AttributeSet?) :
         mutableListOf<Float>(),
     )
     private lateinit var landmark1: MutableList<NormalizedLandmark>
-    private var e1_ft=true
+
     private var e5_ft=true
     private var e5_ft2=true
     private var fingersClosedBegin=false
@@ -140,7 +143,11 @@ class OverlayView(context: Context?, attrs: AttributeSet?) :
 
     private var lmk_ft=true
     private lateinit var landmark_stop: MutableList<NormalizedLandmark>
-    private val h = context?.let { H1(it) }
+    private val h1 = context?.let { H1(it) }
+    private val h2 = context?.let { H2(it) }
+    private val h3 = context?.let { H3(it) }
+    private val h5 = context?.let { H5(it) }
+    private val h6 = context?.let { H6(it) }
 
 
 
@@ -283,335 +290,25 @@ class OverlayView(context: Context?, attrs: AttributeSet?) :
 
 
                     if(exerciseID==1){
-
-                        h?.startExercise(canvas,landmark)
-
-
+                        h1?.startExercise(canvas,landmark)
                     }
 
 
-                    if(exerciseID==2){
-
-                        if(e1_ft){
-                            landmark1 = landmark
-                        }
-                        e1_ft=false
-
-                        println(landmark1)
-                        var calculatedAngle = c.angle3ds_static(landmark1,landmark, 4, 9, 4)
-
-
-                        val angleText = "Angle: %.2f".format(calculatedAngle)
-                        //c.angle(landmark)
-
-                        canvas.drawText(angleText, x2, y2 - 50, textPaint)
-
-                        if (calculatedAngle < minAngle) {
-                            minAngle = calculatedAngle
-                        }
-                        if (calculatedAngle > maxAngle) {
-                            maxAngle = calculatedAngle
-                        }
-
-                        touch_flag = if (calculatedAngle > 100f) {//touched?
-
-
-                            if (touch_flag && aflag) {
-
-                                reps++
-
-                                stats[0].add(minAngle)
-
-                                stats[1].add(maxAngle)
-                                aflag=false
-
-                                minAngle = 9999f//reset for new rep
-                                maxAngle = 0f
-                            }
-                            false
-
-
-                        } else {
-                            true
-                        }
-
-                        if (calculatedAngle < 20f) {//this is basically a reset for the new turn to make sure we did not just move a little bit
-                            aflag=true
-                        }
-
-
-
-                        if (reps == 5) {
-
-                            canvasProperties.displayConfetti(canvas)
-                            canvas.drawText(
-                                "W E L L   D O N E !  : )",
-                                ((x1 + x3) / 2) + 100,
-                                ((y1 + y3) / 2) + 100,
-                                textPaint2
-                            )
-
-                            val context = context
-
-                            // Create an Intent for the target activity
-                            val intent =
-                                Intent(context, StatsActivity::class.java)//EXERCISE SELECTION
-                            intent.putExtra("listValues", stats as Serializable)
-                            intent.putExtra("min", "Minimum Angle")
-                            intent.putExtra("max", "Maximum Angle")
-                            intent.putExtra("unit", "deg")
-
-                            // Start the activity
-                            context.startActivity(intent)
-                        }
+                    if(exerciseID==2) {
+                        h2?.startExercise(canvas, landmark)
 
                     }
-
-
-
-
-
-
 
                     if(exerciseID==3) {
 
-                        var calculatedAngle = c.angle3ds(landmark, 4, 1, 8)
-
-
-                        val angleText = "Angle: %.2f".format(calculatedAngle)
-                        //c.angle(landmark)
-
-                        canvas.drawText(angleText, x2, y2 - 50, textPaint)
-
-                        if (calculatedAngle < minAngle) {
-                            minAngle = calculatedAngle
-                        }
-                        if (calculatedAngle > maxAngle) {
-                            maxAngle = calculatedAngle
-                        }
-
-                        touch_flag = if (calculatedAngle < 10f) {//touched?
-
-
-                            if (touch_flag && aflag) {
-
-                                reps++
-
-                                stats[0].add(minAngle)
-                                stats[1].add(maxAngle)
-                                aflag=false
-
-                                minAngle = 9999f//reset for new rep
-                                maxAngle = 0f
-                            }
-                            false
-
-
-                        } else {
-                            true
-                        }
-
-                        if (calculatedAngle > avalue) {//this is basically a reset for the new turn to make sure we did not just move a little bit
-                            aflag=true
-                        }
-
-
-
-                        if (reps == 5) {
-
-                            canvasProperties.displayConfetti(canvas)
-                            canvas.drawText(
-                                "W E L L   D O N E !  : )",
-                                ((x1 + x3) / 2) + 100,
-                                ((y1 + y3) / 2) + 100,
-                                textPaint2
-                            )
-
-                            val context = context
-
-                            // Create an Intent for the target activity
-                            val intent = Intent(context, StatsActivity::class.java)//EXERCISE SELECTION
-                            intent.putExtra("listValues", stats as Serializable)
-                            intent.putExtra("min","Minimum Angle")
-                            intent.putExtra("max","Maximum Angle")
-                            intent.putExtra("unit","deg")
-
-                            // Start the activity
-                            context.startActivity(intent)
-
-                        }
-
-
-
-
+                        h3?.startExercise(canvas, landmark)
 
                     }
 
                     if(exerciseID==4 || exerciseID==5){
 
-                        var ref=  2 / c.distance3ds(landmark, 7, 8, imageWidth, imageHeight, scaleFactor)
 
-
-                        var distances =mutableMapOf<String, Float>()
-                        distances["Thumb"]=c.distance3ds(landmark,0,4,imageWidth,imageHeight, scaleFactor)
-                        distances["Index"]=c.distance3ds(landmark,0,8,imageWidth,imageHeight, scaleFactor)
-                        distances["Middle"]=c.distance3ds(landmark,0,12,imageWidth,imageHeight, scaleFactor)
-                        distances["Right"]=c.distance3ds(landmark,0,16,imageWidth,imageHeight, scaleFactor)
-                        distances["Pinky"]=c.distance3ds(landmark,0,20,imageWidth,imageHeight, scaleFactor)
-
-
-
-
-
-                        if(e5_ft){
-                            distances1=distances
-
-                            for (finger in distances1.keys) {
-                                distances1[finger]?.times(ref)?.let { stats[1].add(it) }
-
-                            }
-
-                        }
-                        e5_ft=false
-
-                        var fingerClosed =mutableMapOf<String, Boolean>()
-                        fingerClosed["Thumb"]=c.distance3ds(landmark,0,4,imageWidth,imageHeight, scaleFactor)< distances1["Thumb"]!! *0.9
-                        fingerClosed["Index"]=c.distance3ds(landmark,0,8,imageWidth,imageHeight, scaleFactor)< distances1["Index"]!! *0.9
-                        fingerClosed["Middle"]=c.distance3ds(landmark,0,12,imageWidth,imageHeight, scaleFactor)< distances1["Middle"]!!*0.9
-                        fingerClosed["Right"]=c.distance3ds(landmark,0,16,imageWidth,imageHeight, scaleFactor)< distances1["Right"]!!*0.9
-                        fingerClosed["Pinky"]=c.distance3ds(landmark,0,20,imageWidth,imageHeight, scaleFactor)< distances1["Pinky"]!!*0.9
-                        //canvas.drawText("${c.distance3ds(landmark,0,20,imageWidth,imageHeight, scaleFactor)},${distances1["Pinky"]!!*0.8}",1000f,1000f,textPaint2)
-
-
-
-
-                        var y = 320f
-                        fingerClosed.forEach { (key, value) ->
-                            val text = "$key: $value"
-                            canvas.drawText(text, 20f, y, textPaint)
-                            y += 40f
-                        }
-                        val allFingersClosed = fingerClosed.values.all { it }
-                        val allFingersFlexed = fingerClosed.values.all { !it }
-
-                        if (allFingersClosed) {
-                            if(e5_ft2){
-                            for (finger in distances.keys) {
-                                distances[finger]?.times(ref)?.let { stats[0].add(it) }
-
-                            }}
-                            e5_ft2=false
-                            canvas.drawText("All fingers Closed",900f, 180f, textPaint)
-                            fingersClosedBegin=true
-                            e5_touch_flag=true
-
-
-
-                        }else if(!fingersClosedBegin){
-                            canvas.drawText("close all your fingers",400f, 180f, textPaint2)
-                        }
-                        if(fingersClosedBegin){
-
-                            if(allFingersClosed) {
-
-                                canvas.drawText("Flex thumb", 400f, 180f, textPaint2)
-
-                            }
-                            else if(fingerClosed["Thumb"]==false
-                                &&fingerClosed["Index"]==true
-                                &&fingerClosed["Middle"]==true
-                                &&fingerClosed["Right"]==true
-                                &&fingerClosed["Pinky"]==true
-                                ){
-                                canvas.drawText("Flex Index", 400f, 180f, textPaint2)
-                                flexPoint["Thumb"]=true
-                            }
-                            else if(fingerClosed["Thumb"]==false
-                                &&fingerClosed["Index"]==false
-                                &&fingerClosed["Middle"]==true
-                                &&fingerClosed["Right"]==true
-                                &&fingerClosed["Pinky"]==true
-                            ){
-                                canvas.drawText("Flex Middle", 400f, 180f, textPaint2)
-                                flexPoint["Index"]=true
-                            }
-                            else if(fingerClosed["Thumb"]==false
-                                &&fingerClosed["Index"]==false
-                                &&fingerClosed["Middle"]==false
-                                &&fingerClosed["Right"]==true
-                                &&fingerClosed["Pinky"]==true
-                            ){
-                                canvas.drawText("Flex Right", 400f, 180f, textPaint2)
-                                flexPoint["Middle"]=true
-                            }
-                            else if(fingerClosed["Thumb"]==false
-                                &&fingerClosed["Index"]==false
-                                &&fingerClosed["Middle"]==false
-                                &&fingerClosed["Right"]==false
-                                &&fingerClosed["Pinky"]==true
-                            ){
-                                canvas.drawText("Flex Pinky", 400f, 180f, textPaint2)
-                                flexPoint["Right"]=true
-                            }
-                            else if(allFingersFlexed){
-                                flexPoint["Pinky"]=true
-
-                                if(flexPoint.values.all { it }){
-
-                                    if(e5_touch_flag) {
-                                        reps++
-                                        e5_touch_flag=false
-                                        fingersClosedBegin=false
-
-                                        flexPoint = mutableMapOf<String, Boolean>().apply {
-                                            this["Thumb"] = false
-                                            this["Index"] = false
-                                            this["Middle"] = false
-                                            this["Right"] = false
-                                            this["Pinky"] = false
-                                        }
-
-
-                                    }
-                                }
-
-                            }
-
-
-                        }
-                        canvas.drawText("comp val $allFingersFlexed, $flexPoint", 300f, 1000f, textPaint)
-
-                        if (reps == 2) {
-                            fingersClosedBegin=true
-
-                            canvasProperties.displayConfetti(canvas)
-                            canvas.drawText(
-                                "W E L L   D O N E !  : )",
-                                ((x1 + x3) / 2) + 100,
-                                ((y1 + y3) / 2) + 100,
-                                textPaint2
-                            )
-
-                            val context = context
-
-                            // Create an Intent for the target activity
-                            val intent = Intent(context, StatsActivity::class.java)//EXERCISE SELECTION
-                            intent.putExtra("listValues", stats as Serializable)
-                            intent.putExtra("min","Fingers Closed Distance")
-                            intent.putExtra("max","Fingers Flexed Distance")
-                            intent.putExtra("unit","cm")
-
-                            // Start the activity
-                            context.startActivity(intent)
-
-                        }
-
-
-
-
-
-
-
+                        h5?.startExercise(canvas, landmark, imageWidth,imageHeight,scaleFactor)
 
 
                     }
@@ -620,82 +317,7 @@ class OverlayView(context: Context?, attrs: AttributeSet?) :
 
                     if(exerciseID==6){
 
-                        val distanceInCm = (c.distance3ds(
-                            landmark,
-                            4,
-                            8,
-                            imageWidth,
-                            imageHeight,
-                            scaleFactor
-                        ) * 2 / c.distance3ds(landmark, 7, 8, imageWidth, imageHeight, scaleFactor)) - 1
-
-
-                        val distanceText = "Distance: %.2f cm".format(distanceInCm)
-
-                        //for stats
-                        if (distanceInCm < mindistance) {
-                            mindistance = distanceInCm
-                        }
-                        if (distanceInCm > maxdistance) {
-                            maxdistance = distanceInCm
-                        }
-
-
-                        touch_flag = if (distanceInCm < 1f) {//touched?
-
-
-                            if (touch_flag && dflag) {
-
-                                reps++
-
-                                stats[0].add(mindistance)
-
-                                stats[1].add(maxdistance)
-                                dflag=false
-
-                                mindistance = 9999f//reset for new rep
-                                maxdistance = 0f
-                            }
-                            false
-
-
-                        } else {
-                            true
-                        }
-
-                        if (distanceInCm > dvalue) {
-                            dflag=true
-                        }
-
-
-
-                        if (reps == 5) {
-
-                            canvasProperties.displayConfetti(canvas)
-                            canvas.drawText(
-                                "W E L L   D O N E !  : )",
-                                ((x1 + x3) / 2) + 100,
-                                ((y1 + y3) / 2) + 100,
-                                textPaint2
-                            )
-
-                            val context = context
-
-                            // Create an Intent for the target activity
-                            val intent = Intent(context, StatsActivity::class.java)//EXERCISE SELECTION
-                            intent.putExtra("listValues", stats as Serializable)
-
-                            intent.putExtra("min","Minimum Distance")
-                            intent.putExtra("max","Maximum Distance")
-                            intent.putExtra("unit","cm")
-
-                            // Start the activity
-                            context.startActivity(intent)
-
-                        }
-
-
-                        canvas.drawText(distanceText, (x1 + x3) / 2, (y1 + y3) / 2, textPaint)
+                        h6?.startExercise(canvas, landmark, imageWidth,imageHeight,scaleFactor)
 
 
                     }

@@ -12,11 +12,8 @@ abstract class HandExercise(context: Context?) {
 
     //Paint properties
     val canvasProperties = CanvasProperties()
-    val rectPaint = canvasProperties.getRectPaint()
-    val linePaint = canvasProperties.getLinePaint()
-    val linePaint2 = canvasProperties.getLinePaint2()
-    val pointPaint = canvasProperties.getPointPaint()
-    val pointPaint2 = canvasProperties.getPointPaint2()
+
+
     val textPaint = canvasProperties.getTextPaint()
     val textPaint2 = canvasProperties.getTextPaint2()
     //getting context value from main activity that was passed by the previous activity(Exercise Selection)
@@ -59,6 +56,5 @@ abstract class HandExercise(context: Context?) {
 
     var e5TouchFlag=true
 
-    abstract fun startExercise(canvas: Canvas, landmark: MutableList<NormalizedLandmark>)
+}
 
-    }

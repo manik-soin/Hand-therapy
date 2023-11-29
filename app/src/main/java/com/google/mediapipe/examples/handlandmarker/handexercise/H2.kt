@@ -8,30 +8,30 @@ import com.google.mediapipe.examples.handlandmarker.StatsActivity
 import com.google.mediapipe.tasks.components.containers.NormalizedLandmark
 import java.io.Serializable
 
-class H1(private val context: Context) : HandExercise(context) {
-
+class H2(private val context: Context) : HandExercise(context) {
 
     private var isFirstValue=true
     private var repFlag=true
     private var aflag=true
     private var reps =0
 
-
     fun startExercise(canvas: Canvas, landmark: MutableList<NormalizedLandmark>) {
         val c = Compute()
         canvas.drawText(" REPS: $reps", canvas.width-400f, 200f, textPaint2)
 
 
-        if (isFirstValue) {
+
+        if(isFirstValue){
             landmark1 = landmark
-
         }
-        isFirstValue = false
+        isFirstValue=false
+
+        println(landmark1)
+        var calculatedAngle = c.angle3ds_static(landmark1,landmark, 4, 9, 4)
 
 
-        val calculatedAngle = c.angle3ds_static(landmark1, landmark, 17, 0, 17)
         val angleText = "Angle: %.2f".format(calculatedAngle)
-
+        //c.angle(landmark)
 
         canvas.drawText(angleText, 100f , 500f, textPaint)
 
@@ -42,30 +42,49 @@ class H1(private val context: Context) : HandExercise(context) {
             maxAngle = calculatedAngle
         }
 
-        repFlag = if (calculatedAngle > 50f) {
+        repFlag = if (calculatedAngle > 100f) {//touched?
+
+
             if (repFlag && aflag) {
+
                 reps++
+
                 stats[0].add(minAngle)
+
                 stats[1].add(maxAngle)
-                aflag = false
-                minAngle = 9999f
+                aflag=false
+
+                minAngle = 9999f//reset for new rep
                 maxAngle = 0f
             }
             false
+
+
         } else {
             true
         }
 
-        if (calculatedAngle < 20f) {
-            aflag = true
+        if (calculatedAngle < 20f) {//this is basically a reset for the new turn to make sure we did not just move a little bit
+            aflag=true
         }
 
+
+
         if (reps == 5) {
+
             canvasProperties.displayConfetti(canvas)
-            canvas.drawText("W E L L   D O N E !  : )", 500f, 500f, textPaint2)
+            canvas.drawText(
+                "W E L L   D O N E !  : )",
+                500f,
+                500f,
+                textPaint2
+            )
+
+
 
             // Create an Intent for the target activity
-            val intent = Intent(context, StatsActivity::class.java)
+            val intent =
+                Intent(context, StatsActivity::class.java)//EXERCISE SELECTION
             intent.putExtra("listValues", stats as Serializable)
             intent.putExtra("min", "Minimum Angle")
             intent.putExtra("max", "Maximum Angle")
@@ -74,5 +93,6 @@ class H1(private val context: Context) : HandExercise(context) {
             // Start the activity
             context.startActivity(intent)
         }
+
     }
 }
