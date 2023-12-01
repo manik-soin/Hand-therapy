@@ -92,65 +92,30 @@ class OverlayView(context: Context?, attrs: AttributeSet?) :
 
 
 
-    private var timertext=""
+    private var timerText=""
     private val timer=object : CountDownTimer(4000, 100) {
 
         override fun onTick(millisUntilFinished: Long) {
-            timertext=("seconds remaining: " + millisUntilFinished / 1000)
+            timerText=("seconds remaining: " + millisUntilFinished / 1000)
         }
 
         override fun onFinish() {
-            timertext=("done!")
-            validation_complete=true
+            timerText=("done!")
+            validationComplete=true
         }
     }
 
     //flags and exercise related
-    private var validation_flag=true//calibration
-    private var dflag=true
-    private var aflag=true
-    private var validation_complete=false
-    private var touch_flag=true
-    private var reps =0
-    private var maxdistance =0f
-    private var dvalue =5f
-    private var mindistance =9999f
-    private var distances1 =mutableMapOf<String, Float>()
+    private var validationFlag=true//calibration
+
+    private var validationComplete=false
 
 
-    private var maxAngle =0f
-    private var avalue =30f
-    private var minAngle =9999f
-
-    val stats = mutableListOf(
-        mutableListOf<Float>(),
-        mutableListOf<Float>(),
-    )
-    private lateinit var landmark1: MutableList<NormalizedLandmark>
-
-    private var e5_ft=true
-    private var e5_ft2=true
-    private var fingersClosedBegin=false
-    private var flexPoint = mutableMapOf<String, Boolean>().apply {
-        this["Thumb"] = false
-        this["Index"] = false
-        this["Middle"] = false
-        this["Right"] = false
-        this["Pinky"] = false
-    }
-
-    private var e5_touch_flag=true
-
-    private var lmk_ft=true
-    private lateinit var landmark_stop: MutableList<NormalizedLandmark>
     private val h1 = context?.let { H1(it) }
     private val h2 = context?.let { H2(it) }
     private val h3 = context?.let { H3(it) }
     private val h5 = context?.let { H5(it) }
     private val h6 = context?.let { H6(it) }
-
-
-
 
 
 
@@ -191,7 +156,7 @@ class OverlayView(context: Context?, attrs: AttributeSet?) :
         )
 
         //VALIDATION INCOMPLETE
-        if(!validation_complete){
+        if(!validationComplete){
 
         // Draw the scaled image on the canvas
             canvas.drawText("CALIBRATION: Place your left hand on the given mark", 100f, 100f, textPaint)
@@ -215,11 +180,7 @@ class OverlayView(context: Context?, attrs: AttributeSet?) :
             }
         }
 
-
-        val c = Compute()
         val v = Calibrate()
-
-
 
 
 
@@ -258,21 +219,21 @@ class OverlayView(context: Context?, attrs: AttributeSet?) :
                     v.validate(landmark, x1,y1, x2, y2,imageWidth,imageHeight,scaleFactor)
                 }
 
-                if(validated && !validation_complete){
-                    if(validation_flag){
+                if(validated && !validationComplete){
+                    if(validationFlag){
                     timer.start()}
-                    validation_flag=false
+                    validationFlag=false
 
                     canvas.drawText("VALIDATED", 100f, 300f, textPaint2)
-                    canvas.drawText(timertext, 100f, 500f, textPaint)
+                    canvas.drawText(timerText, 100f, 500f, textPaint)
 
                 }
                 else{
                     timer.cancel()
-                    validation_flag=true
+                    validationFlag=true
                 }
 
-                if(validation_complete) {
+                if(validationComplete) {
 
                     //Drawing the angle line
                     val (x1, y1, z1) = points[1]

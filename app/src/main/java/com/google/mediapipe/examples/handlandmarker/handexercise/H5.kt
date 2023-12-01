@@ -10,8 +10,7 @@ import java.io.Serializable
 
 class H5(private val context: Context) : HandExercise(context) {
 
-    private var isFirstValue=true
-    private var reps =0
+
 
 
 

@@ -22,6 +22,12 @@ abstract class HandExercise(context: Context?) {
     private val difficultyValue = mainActivity?.getDifficultyValue()//difficulty value
 
 
+    var isFirstValue=true
+    var repFlag=true
+    var aflag=true
+    var reps =0
+
+
     var dflag=true
     //var aflag=true
     var validation_complete=false

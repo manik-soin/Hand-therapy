@@ -10,7 +10,6 @@ import java.io.Serializable
 
 class H6(private val context: Context) : HandExercise(context) {
 
-    private var reps =0
 
     fun startExercise(canvas: Canvas, landmark: MutableList<NormalizedLandmark>,w: Int, h: Int, scaleFactor: Float) {
         val c = Compute()

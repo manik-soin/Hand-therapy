@@ -10,10 +10,7 @@ import java.io.Serializable
 
 class H2(private val context: Context) : HandExercise(context) {
 
-    private var isFirstValue=true
-    private var repFlag=true
-    private var aflag=true
-    private var reps =0
+
 
     fun startExercise(canvas: Canvas, landmark: MutableList<NormalizedLandmark>) {
         val c = Compute()
