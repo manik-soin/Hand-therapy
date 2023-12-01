@@ -1,4 +1,4 @@
-package com.google.mediapipe.examples.handlandmarker
+package com.google.mediapipe.examples.handlandmarker.utils
 
 import android.graphics.Canvas
 import android.graphics.Color

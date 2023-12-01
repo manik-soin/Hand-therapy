@@ -3,16 +3,39 @@ package com.google.mediapipe.examples.handlandmarker.handexercise
 import android.content.Context
 import android.content.Intent
 import android.graphics.Canvas
-import com.google.mediapipe.examples.handlandmarker.Compute
+import com.google.mediapipe.examples.handlandmarker.utils.Compute
 import com.google.mediapipe.examples.handlandmarker.StatsActivity
 import com.google.mediapipe.tasks.components.containers.NormalizedLandmark
 import java.io.Serializable
-
+/**
+ * This class represents the Active Finger Flexion & (isolated) Finger Extension exercise, which involves
+ * first closing all fingers and then flexing them one by one. The exercise can be started by calling the
+ * startExercise() method, which takes a Canvas and a list of NormalizedLandmarks as parameters. The current
+ * number of repetitions is displayed on the canvas using textPaint2. The distances between specific landmarks
+ * are calculated using an instance of the Compute class to determine if the fingers are closed or flexed.
+ * The exercise proceeds through a series of steps, directing the user to flex each finger one by one.
+ * When the number of reps reaches 2, confetti is displayed on the canvas and an Intent is created to start the
+ * StatsActivity, passing in the relevant statistical data.
+ *
+ * @param context The context in which this class is being used.
+ */
 class H5(private val context: Context) : HandExercise(context) {
 
 
-    private var isFirstTimeClosed=true
-    private var fingersClosedBegin=false
+    /**
+     * A flag indicating if this is the first time all fingers are closed during the exercise.
+     */
+    private var isFirstTimeClosed = true
+
+    /**
+     * A flag indicating if the fingers have been closed at the beginning of the exercise.
+     */
+    private var fingersClosedBegin = false
+
+    /**
+     * A map containing the flex state of each finger. A true value indicates that the finger is flexed,
+     * and a false value indicates that the finger is not flexed.
+     */
     private var flexPoint = mutableMapOf<String, Boolean>().apply {
         this["Thumb"] = false
         this["Index"] = false
@@ -23,7 +46,19 @@ class H5(private val context: Context) : HandExercise(context) {
 
 
 
-
+    /**
+     * This method starts the Active Finger Flexion & (isolated) Finger Extension exercise by drawing the current
+     * number of reps on the canvas, and then calculating the distances between specific landmarks using the
+     * distance3ds() method of an instance of the Compute class. The exercise proceeds through a series of steps,
+     * directing the user to flex each finger one by one. When the number of reps reaches 2, confetti is displayed
+     * on the canvas and an Intent is created to start the StatsActivity, passing in the relevant statistical data.
+     *
+     * @param canvas The canvas on which to draw the current state of the exercise.
+     * @param landmark A list of NormalizedLandmarks representing the current state of the hand.
+     * @param w The width of the canvas.
+     * @param h The height of the canvas.
+     * @param scaleFactor The scale factor to apply to the distances.
+     */
     fun startExercise(canvas: Canvas, landmark: MutableList<NormalizedLandmark>,w: Int, h: Int, scaleFactor: Float) {
         val c = Compute()
         canvas.drawText(" REPS: $reps", canvas.width-400f, 200f, textPaint2)

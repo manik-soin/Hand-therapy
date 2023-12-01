@@ -1,4 +1,4 @@
-package com.google.mediapipe.examples.handlandmarker
+package com.google.mediapipe.examples.handlandmarker.utils
 
 import com.google.mediapipe.tasks.components.containers.NormalizedLandmark
 

@@ -3,7 +3,7 @@ package com.google.mediapipe.examples.handlandmarker.handexercise
 import android.content.Context
 import android.content.Intent
 import android.graphics.Canvas
-import com.google.mediapipe.examples.handlandmarker.Compute
+import com.google.mediapipe.examples.handlandmarker.utils.Compute
 import com.google.mediapipe.examples.handlandmarker.StatsActivity
 import com.google.mediapipe.tasks.components.containers.NormalizedLandmark
 import java.io.Serializable

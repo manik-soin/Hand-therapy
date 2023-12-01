@@ -3,7 +3,7 @@ import android.content.Context
 
 import com.google.mediapipe.tasks.components.containers.NormalizedLandmark
 
-import com.google.mediapipe.examples.handlandmarker.CanvasProperties
+import com.google.mediapipe.examples.handlandmarker.utils.CanvasProperties
 import com.google.mediapipe.examples.handlandmarker.MainActivity
 
 /**

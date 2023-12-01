@@ -2,21 +2,15 @@
 package com.google.mediapipe.examples.handlandmarker
 
 import android.content.Context
-import android.content.Intent
 import android.graphics.Canvas
-import android.graphics.Color
-import android.graphics.Paint
-import android.graphics.Typeface
 import android.util.AttributeSet
 import android.view.View
-import androidx.core.content.ContextCompat
 import com.google.mediapipe.tasks.vision.core.RunningMode
 import com.google.mediapipe.tasks.vision.handlandmarker.HandLandmarker
 import com.google.mediapipe.tasks.vision.handlandmarker.HandLandmarkerResult
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.Triple
-import android.graphics.DashPathEffect
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -27,8 +21,8 @@ import com.google.mediapipe.examples.handlandmarker.handexercise.H2
 import com.google.mediapipe.examples.handlandmarker.handexercise.H3
 import com.google.mediapipe.examples.handlandmarker.handexercise.H5
 import com.google.mediapipe.examples.handlandmarker.handexercise.H6
-import com.google.mediapipe.tasks.components.containers.NormalizedLandmark
-import java.io.Serializable
+import com.google.mediapipe.examples.handlandmarker.utils.Calibrate
+import com.google.mediapipe.examples.handlandmarker.utils.CanvasProperties
 
 
 class OverlayView(context: Context?, attrs: AttributeSet?) :
