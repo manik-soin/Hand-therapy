@@ -11,7 +11,15 @@ import java.io.Serializable
 class H5(private val context: Context) : HandExercise(context) {
 
 
-
+    private var isFirstTimeClosed=true
+    private var fingersClosedBegin=false
+    private var flexPoint = mutableMapOf<String, Boolean>().apply {
+        this["Thumb"] = false
+        this["Index"] = false
+        this["Middle"] = false
+        this["Right"] = false
+        this["Pinky"] = false
+    }
 
 
 
@@ -65,15 +73,15 @@ class H5(private val context: Context) : HandExercise(context) {
         val allFingersFlexed = fingerClosed.values.all { !it }
 
         if (allFingersClosed) {
-            if(e5_ft2){
+            if(isFirstTimeClosed){
                 for (finger in distances.keys) {
                     distances[finger]?.times(ref)?.let { stats[0].add(it) }
 
                 }}
-            e5_ft2=false
+            isFirstTimeClosed=false
             canvas.drawText("All fingers Closed",900f, 180f, textPaint)
             fingersClosedBegin=true
-            e5TouchFlag=true
+            startNewRep=true
 
 
 
@@ -128,9 +136,9 @@ class H5(private val context: Context) : HandExercise(context) {
 
                 if(flexPoint.values.all { it }){
 
-                    if(e5TouchFlag) {
+                    if(startNewRep) {
                         reps++
-                        e5TouchFlag=false
+                        startNewRep=false
                         fingersClosedBegin=false
 
                         flexPoint = mutableMapOf<String, Boolean>().apply {

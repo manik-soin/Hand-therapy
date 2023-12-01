@@ -39,17 +39,17 @@ class H2(private val context: Context) : HandExercise(context) {
             maxAngle = calculatedAngle
         }
 
-        repFlag = if (calculatedAngle > 100f) {//touched?
+        startNewRep = if (calculatedAngle > 100f) {//touched?
 
 
-            if (repFlag && aflag) {
+            if (startNewRep && angleBelowThreshold) {
 
                 reps++
 
                 stats[0].add(minAngle)
 
                 stats[1].add(maxAngle)
-                aflag=false
+                angleBelowThreshold=false
 
                 minAngle = 9999f//reset for new rep
                 maxAngle = 0f
@@ -62,7 +62,7 @@ class H2(private val context: Context) : HandExercise(context) {
         }
 
         if (calculatedAngle < 20f) {//this is basically a reset for the new turn to make sure we did not just move a little bit
-            aflag=true
+            angleBelowThreshold=true
         }
 
 

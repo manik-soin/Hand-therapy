@@ -29,28 +29,28 @@ class H6(private val context: Context) : HandExercise(context) {
         val distanceText = "Distance: %.2f cm".format(distanceInCm)
 
         //for stats
-        if (distanceInCm < mindistance) {
-            mindistance = distanceInCm
+        if (distanceInCm < minDistance) {
+            minDistance = distanceInCm
         }
-        if (distanceInCm > maxdistance) {
-            maxdistance = distanceInCm
+        if (distanceInCm > maxDistance) {
+            maxDistance = distanceInCm
         }
 
 
-        touch_flag = if (distanceInCm < 1f) {//touched?
+        startNewRep = if (distanceInCm < 1f) {//touched?
 
 
-            if (touch_flag && dflag) {
+            if (startNewRep && distanceBelowThreshold) {
 
                 reps++
 
-                stats[0].add(mindistance)
+                stats[0].add(minDistance)
 
-                stats[1].add(maxdistance)
-                dflag=false
+                stats[1].add(maxDistance)
+                distanceBelowThreshold=false
 
-                mindistance = 9999f//reset for new rep
-                maxdistance = 0f
+                minDistance = 9999f//reset for new rep
+                maxDistance = 0f
             }
             false
 
@@ -59,8 +59,8 @@ class H6(private val context: Context) : HandExercise(context) {
             true
         }
 
-        if (distanceInCm > dvalue) {
-            dflag=true
+        if (distanceInCm > distanceThreshold) {
+            distanceBelowThreshold=true
         }
 
 
