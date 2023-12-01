@@ -6,6 +6,10 @@ import android.graphics.DashPathEffect
 import android.graphics.Paint
 import android.graphics.Typeface
 
+/**
+ * This class defines the canvas properties such as paint styles, colors, and stroke widths.
+ * It also provides methods to draw dashed lines and display confetti on the canvas.
+ */
 class CanvasProperties {
 
     private val rectPaint = Paint()
@@ -21,6 +25,9 @@ class CanvasProperties {
         initPaints()
     }
 
+    /**
+     * Initializes the paint objects with their respective properties such as colors, stroke widths, and styles.
+     */
     private fun initPaints() {
         linePaint.color = Color.BLUE
         linePaint.strokeWidth = strokeWidth
@@ -55,34 +62,24 @@ class CanvasProperties {
         rectPaint.strokeWidth = 12f
     }
 
-    fun getRectPaint(): Paint {
-        return rectPaint
-    }
+    // Getter methods for the paint objects
+    fun getRectPaint(): Paint { return rectPaint }
+    fun getLinePaint(): Paint { return linePaint }
+    fun getLinePaint2(): Paint { return linePaint2 }
+    fun getPointPaint(): Paint { return pointPaint }
+    fun getPointPaint2(): Paint { return pointPaint2 }
+    fun getTextPaint(): Paint { return textPaint }
+    fun getTextPaint2(): Paint { return textPaint2 }
 
-    fun getLinePaint(): Paint {
-        return linePaint
-    }
-
-    fun getLinePaint2(): Paint {
-        return linePaint2
-    }
-
-    fun getPointPaint(): Paint {
-        return pointPaint
-    }
-
-    fun getPointPaint2(): Paint {
-        return pointPaint2
-    }
-
-    fun getTextPaint(): Paint {
-        return textPaint
-    }
-
-    fun getTextPaint2(): Paint {
-        return textPaint2
-    }
-
+    /**
+     * Draws a dashed line on the canvas using the provided start and end coordinates.
+     *
+     * @param canvas The canvas on which to draw the dashed line.
+     * @param startX The starting x-coordinate of the dashed line.
+     * @param startY The starting y-coordinate of the dashed line.
+     * @param stopX The ending x-coordinate of the dashed line.
+     * @param stopY The ending y-coordinate of the dashed line.
+     */
     fun drawDashedLine(canvas: Canvas, startX: Float, startY: Float, stopX: Float, stopY: Float) {
         val paint = Paint()
         paint.style = Paint.Style.STROKE
@@ -92,7 +89,20 @@ class CanvasProperties {
         canvas.drawLine(startX, startY, stopX, stopY, paint)
     }
 
+    /**
+     * Displays confetti on the canvas by drawing randomly colored circles at random positions.
+     * The function uses a nested function, randomColor(), to generate random colors for the confetti.
+     *
+     * @param canvas The canvas on which to display the confetti.
+     */
     fun displayConfetti(canvas: Canvas) {
+        /**
+         * Generates a random color by selecting random values for red, green, and blue components.
+         * It creates a Paint object with the generated color and sets its strokeWidth and style.
+         *
+         * @return A Paint object with a random color.
+         */
+
         fun randomColor(): Paint {
             val paint = Paint()
             val red = (0..255).random()

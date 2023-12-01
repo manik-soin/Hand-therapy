@@ -26,7 +26,7 @@ class H1(private val context: Context) : HandExercise(context) {
     /**
      * This method starts the Active Wrist Extension (Assisted forearm fixation) exercise by drawing the current
      * number of reps on the canvas, and then calculating the angle between the two landmarks using the
-     * angle3ds_static() method of an instance of the Compute class. The minimum and maximum angles are updated
+     * computeAngle3StaticPoint() method of an instance of the Compute class. The minimum and maximum angles are updated
      * based on the current angle, and the number of reps is incremented if the angle is greater than 50 degrees.
      * When the number of reps reaches 5, confetti is displayed on the canvas and an Intent is created to start
      * the StatsActivity, passing in the relevant statistical data.
@@ -48,7 +48,7 @@ class H1(private val context: Context) : HandExercise(context) {
         isFirstValue = false
 
 
-        val calculatedAngle = c.angle3ds_static(landmark1, landmark, 17, 0, 17)
+        val calculatedAngle = c.computeAngle3StaticPoint(landmark1, landmark, 17, 0, 17)
         val angleText = "Angle: %.2f".format(calculatedAngle)
 
 

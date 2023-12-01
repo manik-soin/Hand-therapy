@@ -23,7 +23,7 @@ class H6(private val context: Context) : HandExercise(context) {
 
     /**
      * This method starts the Active Finger Opposition exercise by drawing the current number of reps on the canvas,
-     * and then calculating the distances between specific landmarks using the distance3ds() method of an instance
+     * and then calculating the distances between specific landmarks using the computeDistance3d() method of an instance
      * of the Compute class. The minimum and maximum distances are updated based on the current distance, and the
      * number of reps is incremented if the distance is less than 1 cm. When the number of reps reaches 5, confetti
      * is displayed on the canvas and an Intent is created to start the StatsActivity, passing in the relevant
@@ -40,14 +40,14 @@ class H6(private val context: Context) : HandExercise(context) {
         canvas.drawText(" REPS: $reps", canvas.width-400f, 200f, textPaint2)
 
 
-        val distanceInCm = (c.distance3ds(
+        val distanceInCm = (c.computeDistance3d(
             landmark,
             4,
             8,
             w,
             h,
             scaleFactor
-        ) * 2 / c.distance3ds(landmark, 7, 8, w, h, scaleFactor)) - 1
+        ) * 2 / c.computeDistance3d(landmark, 7, 8, w, h, scaleFactor)) - 1
 
 
         val distanceText = "Distance: %.2f cm".format(distanceInCm)

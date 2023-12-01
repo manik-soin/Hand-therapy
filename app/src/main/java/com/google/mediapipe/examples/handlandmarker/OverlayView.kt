@@ -25,54 +25,123 @@ import com.google.mediapipe.examples.handlandmarker.utils.Calibrate
 import com.google.mediapipe.examples.handlandmarker.utils.CanvasProperties
 
 
+/**
+ * Custom view class for displaying hand landmarks, connections, and exercise information.
+ *
+ * @param context The context in which the view is created.
+ * @param attrs The AttributeSet for the view.
+ */
 class OverlayView(context: Context?, attrs: AttributeSet?) :
     View(context, attrs) {
 
-    //Properties
+    // Properties
+    /**
+     * The bitmap for the calibration image.
+     */
     private var imageBitmap: Bitmap
+
+    /**
+     * The result object containing the hand landmarks.
+     */
     private var results: HandLandmarkerResult? = null
 
-    //Paint properties
+    // Paint properties
+    /**
+     * Canvas Properties Object
+     */
     private val canvasProperties = CanvasProperties()
+    /**
+     * Paint object for drawing rectangles.
+     */
     private val rectPaint = canvasProperties.getRectPaint()
+
+    /**
+     * Paint object for drawing lines.
+     */
     private val linePaint = canvasProperties.getLinePaint()
+
+    /**
+     * Paint object for drawing alternate lines.
+     */
     private val linePaint2 = canvasProperties.getLinePaint2()
+
+    /**
+     * Paint object for drawing points.
+     */
     private val pointPaint = canvasProperties.getPointPaint()
+
+    /**
+     * Paint object for drawing alternate points.
+     */
     private val pointPaint2 = canvasProperties.getPointPaint2()
+
+    /**
+     * Paint object for drawing text.
+     */
     private val textPaint = canvasProperties.getTextPaint()
+
+    /**
+     * Paint object for drawing alternate text.
+     */
     private val textPaint2 = canvasProperties.getTextPaint2()
 
-
-    //Image Scaling
+    // Image Scaling
+    /**
+     * Scale factor for resizing the image.
+     */
     private var scaleFactor: Float = 1f
+
+    /**
+     * Width of the image.
+     */
     private var imageWidth: Int = 1
+
+    /**
+     * Height of the image.
+     */
     private var imageHeight: Int = 1
 
-    //getting context value from main activity that was passed by the previous activity(Exercise Selection)
+    // Getting context value from main activity that was passed by the previous activity (Exercise Selection)
+    /**
+     * The MainActivity object for accessing exercise and difficulty values.
+     */
     private val mainActivity = context as? MainActivity
-    private val exerciseValue = mainActivity?.getExerciseValue()//exercise value
-    private val difficultyValue = mainActivity?.getDifficultyValue()//difficulty value
 
-    private val exerciseID = mainActivity?.getExerciseID()//exercise id
-    private val difficultyID = mainActivity?.getDifficultyID()//difficulty id
+    /**
+     * The selected exercise value.
+     */
+    private val exerciseValue = mainActivity?.getExerciseValue()
 
+    /**
+     * The selected difficulty value.
+     */
+    private val difficultyValue = mainActivity?.getDifficultyValue()
 
-    //Initialise the calibration image
+    /**
+     * The selected exercise ID.
+     */
+    private val exerciseID = mainActivity?.getExerciseID()
+
+    /**
+     * The selected difficulty ID.
+     */
+    private val difficultyID = mainActivity?.getDifficultyID()
+
+    // Initialize the calibration image
     init {
-
-        //choose the calibration image
-        val imageResId = if(exerciseID==1) {
+        // Choose the calibration image
+        val imageResId = if (exerciseID == 1) {
             R.drawable.palm_down
-        }
-        else{
+        } else {
             R.drawable.palm_left
         }
 
         imageBitmap = BitmapFactory.decodeResource(resources, imageResId)
     }
 
-
-
+    /**
+     * Clears the view by resetting the result object and paint objects.
+     */
     fun clear() {
         results = null
         linePaint.reset()
@@ -84,52 +153,81 @@ class OverlayView(context: Context?, attrs: AttributeSet?) :
         invalidate()
     }
 
+    /**
+     * Text to display the timer countdown.
+     */
+    private var timerText = ""
 
-
-    private var timerText=""
-    private val timer=object : CountDownTimer(4000, 100) {
-
+    /**
+     * Timer object for counting down during the calibration phase.
+     */
+    private val timer = object : CountDownTimer(4000, 100) {
         override fun onTick(millisUntilFinished: Long) {
-            timerText=("seconds remaining: " + millisUntilFinished / 1000)
+            timerText = "seconds remaining: " + millisUntilFinished / 1000
         }
 
         override fun onFinish() {
-            timerText=("done!")
-            validationComplete=true
+            timerText = "done!"
+            validationComplete = true
         }
     }
 
-    //flags and exercise related
-    private var validationFlag=true//calibration
+    // Flags and exercise-related variables
+    /**
+     * Flag to indicate if the calibration is in progress.
+     */
+    private var validationFlag = true
 
-    private var validationComplete=false
+    /**
+     * Flag to indicate if the calibration is complete.
+     */
+    private var validationComplete = false
 
-
+    /**
+     * Instance of the H1 exercise class.
+     */
     private val h1 = context?.let { H1(it) }
+
+    /**
+     * Instance of the H2 exercise class.
+     */
     private val h2 = context?.let { H2(it) }
+
+    /**
+     * Instance of the H3 exercise class.
+     */
     private val h3 = context?.let { H3(it) }
+
+    /**
+     * Instance of the H5 exercise class.
+     */
     private val h5 = context?.let { H5(it) }
+
+    /**
+     * Instance of the H6 exercise class.
+     */
     private val h6 = context?.let { H6(it) }
 
-
-
-
+    /**
+     * This function is responsible for drawing the hand landmarks on a canvas and providing visual feedback for calibration and exercise execution. When the validation is not complete, it draws a calibration image and instructs the user to place their left hand on the mark. The hand landmarks are detected and analyzed, and if the user's hand is correctly placed, a "VALIDATED" message is shown along with a timer. Once the validation is complete, the code proceeds to draw hand landmarks and guide the user through the selected exercise. Different exercises and difficulty levels are supported, and the code adjusts the hand landmarks and visual guidance accordingly.
+     * @param canvas The drawing canvas that is overlaid
+     */
     override fun draw(canvas: Canvas) {
         super.draw(canvas)
 
 
         //deciding the size of the image
-        var imagesize = if (canvas.height<canvas.width){
+        var imageSize = if (canvas.height<canvas.width){
         (canvas.height/1.4).toInt()
         } else{
             (canvas.width/1.4).toInt()
         }
 
         // Calculate the position to draw the image
-        val x1 = (canvas.width - imagesize ) / 2f - 10f
-        val y1 = (canvas.height - imagesize  ) / 2f - 10f
-        val x2 = (canvas.width + imagesize ) / 2f + 10f
-        val y2 = (canvas.height + imagesize  ) / 2f + 10f
+        val x1 = (canvas.width - imageSize ) / 2f - 10f
+        val y1 = (canvas.height - imageSize  ) / 2f - 10f
+        val x2 = (canvas.width + imageSize ) / 2f + 10f
+        val y2 = (canvas.height + imageSize  ) / 2f + 10f
 
 
         //red rectangle coordinates
@@ -144,8 +242,8 @@ class OverlayView(context: Context?, attrs: AttributeSet?) :
         // Scale the bitmap
         val scaledBitmap = Bitmap.createScaledBitmap(
             imageBitmap,
-            imagesize ,
-            imagesize ,
+            imageSize ,
+            imageSize ,
             true
         )
 
@@ -207,77 +305,39 @@ class OverlayView(context: Context?, attrs: AttributeSet?) :
                     }
                 }
 
-                val validated=if(exerciseID==1){
-                    v.validate_1(landmark, y1, y2,imageWidth,imageHeight,scaleFactor)}
-                else{
-                    v.validate(landmark, x1,y1, x2, y2,imageWidth,imageHeight,scaleFactor)
+                val validated = when (exerciseID) {
+                    1 -> v.validate(landmark, y1, y2, imageWidth, imageHeight, scaleFactor)
+                    else -> v.validate(landmark, x1, y1, x2, y2, imageWidth, imageHeight, scaleFactor)
                 }
 
-                if(validated && !validationComplete){
-                    if(validationFlag){
-                    timer.start()}
-                    validationFlag=false
-
+                if (validated && !validationComplete) {
+                    if (validationFlag) {
+                        timer.start()
+                        validationFlag = false
+                    }
                     canvas.drawText("VALIDATED", 100f, 300f, textPaint2)
                     canvas.drawText(timerText, 100f, 500f, textPaint)
-
-                }
-                else{
+                } else {
                     timer.cancel()
-                    validationFlag=true
+                    validationFlag = true
                 }
 
-                if(validationComplete) {
-
-                    //Drawing the angle line
+                if (validationComplete) {
                     val (x1, y1, z1) = points[1]
                     val (x2, y2, z2) = points[0]
                     val (x3, y3, z3) = points[2]
                     canvas.drawLine(x1, y1, x2, y2, linePaint2)
                     canvas.drawLine(x2, y2, x3, y3, linePaint2)
 
-
-
-                    //Dashed Line between fingers
                     canvasProperties.drawDashedLine(canvas, x1, y1, x3, y3)
 
-
-
-
-                    if(exerciseID==1){
-                        h1?.startExercise(canvas,landmark)
+                    when (exerciseID) {
+                        1 -> h1?.startExercise(canvas, landmark)
+                        2 -> h2?.startExercise(canvas, landmark)
+                        3 -> h3?.startExercise(canvas, landmark)
+                        4, 5 -> h5?.startExercise(canvas, landmark, imageWidth, imageHeight, scaleFactor)
+                        6 -> h6?.startExercise(canvas, landmark, imageWidth, imageHeight, scaleFactor)
                     }
-
-
-                    if(exerciseID==2) {
-                        h2?.startExercise(canvas, landmark)
-
-                    }
-
-                    if(exerciseID==3) {
-
-                        h3?.startExercise(canvas, landmark)
-
-                    }
-
-                    if(exerciseID==4 || exerciseID==5){
-
-
-                        h5?.startExercise(canvas, landmark, imageWidth,imageHeight,scaleFactor)
-
-
-                    }
-
-
-
-                    if(exerciseID==6){
-
-                        h6?.startExercise(canvas, landmark, imageWidth,imageHeight,scaleFactor)
-
-
-                    }
-
-
                 }
 
 

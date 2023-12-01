@@ -28,7 +28,7 @@ class H3(private val context: Context) : HandExercise(context) {
     /**
      * This method starts the Active Thumb Abduction + Adduction  exercise by drawing the current
      * number of reps on the canvas, and then calculating the angle between the specific landmarks using the
-     * angle3ds() method of an instance of the Compute class. The minimum and maximum angles are updated
+     * computeAngle3d() method of an instance of the Compute class. The minimum and maximum angles are updated
      * based on the current angle, and the number of reps is incremented if the angle is less than 10 degrees.
      * When the number of reps reaches 5, confetti is displayed on the canvas and an Intent is created to start
      * the StatsActivity, passing in the relevant statistical data.
@@ -43,7 +43,7 @@ class H3(private val context: Context) : HandExercise(context) {
 
 
 
-        var calculatedAngle = c.angle3ds(landmark, 4, 1, 8)
+        var calculatedAngle = c.computeAngle3d(landmark, 4, 1, 8)
 
 
         val angleText = "Angle: %.2f".format(calculatedAngle)

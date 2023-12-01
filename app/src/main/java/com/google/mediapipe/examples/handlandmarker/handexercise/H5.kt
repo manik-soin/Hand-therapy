@@ -49,7 +49,7 @@ class H5(private val context: Context) : HandExercise(context) {
     /**
      * This method starts the Active Finger Flexion & (isolated) Finger Extension exercise by drawing the current
      * number of reps on the canvas, and then calculating the distances between specific landmarks using the
-     * distance3ds() method of an instance of the Compute class. The exercise proceeds through a series of steps,
+     * computeDistance3d() method of an instance of the Compute class. The exercise proceeds through a series of steps,
      * directing the user to flex each finger one by one. When the number of reps reaches 2, confetti is displayed
      * on the canvas and an Intent is created to start the StatsActivity, passing in the relevant statistical data.
      *
@@ -64,15 +64,15 @@ class H5(private val context: Context) : HandExercise(context) {
         canvas.drawText(" REPS: $reps", canvas.width-400f, 200f, textPaint2)
 
 
-        var ref=  2 / c.distance3ds(landmark, 7, 8, w, h, scaleFactor)
+        var ref=  2 / c.computeDistance3d(landmark, 7, 8, w, h, scaleFactor)
 
 
         var distances =mutableMapOf<String, Float>()
-        distances["Thumb"]=c.distance3ds(landmark,0,4,w,h, scaleFactor)
-        distances["Index"]=c.distance3ds(landmark,0,8,w,h, scaleFactor)
-        distances["Middle"]=c.distance3ds(landmark,0,12,w,h, scaleFactor)
-        distances["Right"]=c.distance3ds(landmark,0,16,w,h, scaleFactor)
-        distances["Pinky"]=c.distance3ds(landmark,0,20,w,h, scaleFactor)
+        distances["Thumb"]=c.computeDistance3d(landmark,0,4,w,h, scaleFactor)
+        distances["Index"]=c.computeDistance3d(landmark,0,8,w,h, scaleFactor)
+        distances["Middle"]=c.computeDistance3d(landmark,0,12,w,h, scaleFactor)
+        distances["Right"]=c.computeDistance3d(landmark,0,16,w,h, scaleFactor)
+        distances["Pinky"]=c.computeDistance3d(landmark,0,20,w,h, scaleFactor)
 
 
 
@@ -90,11 +90,11 @@ class H5(private val context: Context) : HandExercise(context) {
         isFirstValue=false
 
         var fingerClosed =mutableMapOf<String, Boolean>()
-        fingerClosed["Thumb"]=c.distance3ds(landmark,0,4,w,h, scaleFactor)< distances1["Thumb"]!! *0.9
-        fingerClosed["Index"]=c.distance3ds(landmark,0,8,w,h, scaleFactor)< distances1["Index"]!! *0.9
-        fingerClosed["Middle"]=c.distance3ds(landmark,0,12,w,h, scaleFactor)< distances1["Middle"]!!*0.9
-        fingerClosed["Right"]=c.distance3ds(landmark,0,16,w,h, scaleFactor)< distances1["Right"]!!*0.9
-        fingerClosed["Pinky"]=c.distance3ds(landmark,0,20,w,h, scaleFactor)< distances1["Pinky"]!!*0.9
+        fingerClosed["Thumb"]=c.computeDistance3d(landmark,0,4,w,h, scaleFactor)< distances1["Thumb"]!! *0.9
+        fingerClosed["Index"]=c.computeDistance3d(landmark,0,8,w,h, scaleFactor)< distances1["Index"]!! *0.9
+        fingerClosed["Middle"]=c.computeDistance3d(landmark,0,12,w,h, scaleFactor)< distances1["Middle"]!!*0.9
+        fingerClosed["Right"]=c.computeDistance3d(landmark,0,16,w,h, scaleFactor)< distances1["Right"]!!*0.9
+        fingerClosed["Pinky"]=c.computeDistance3d(landmark,0,20,w,h, scaleFactor)< distances1["Pinky"]!!*0.9
 
 
 

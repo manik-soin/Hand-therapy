@@ -13,7 +13,10 @@ import androidx.appcompat.app.AppCompatActivity
 import java.io.Serializable
 import androidx.core.content.ContextCompat
 
-
+/**
+ * This activity displays statistical information for the user's exercise performance.
+ * The statistics are shown in a table format and include minimum and maximum values for each exercise.
+ */
 class StatsActivity : AppCompatActivity() {
     private lateinit var buttonNext: Button
 
@@ -22,12 +25,13 @@ class StatsActivity : AppCompatActivity() {
         setContentView(R.layout.activity_stats)
         buttonNext = findViewById(R.id.btnExerciseSelection)
 
-
         println("STATS")
+        // Retrieve statistical data from the previous activity
         val receivedList = intent.getSerializableExtra("listValues") as? MutableList<MutableList<Float>>
-        val minText = intent.getStringExtra("min")?:"minimum"
-        val maxText = intent.getStringExtra("max")?:"maximum"
-        val unitText = intent.getStringExtra("unit")?:"units"
+        val minText = intent.getStringExtra("min") ?: "minimum"
+        val maxText = intent.getStringExtra("max") ?: "maximum"
+        val unitText = intent.getStringExtra("unit") ?: "units"
+
         if (receivedList != null) {
             val tableLayout: TableLayout = findViewById(R.id.tableLayout)
 
@@ -68,19 +72,19 @@ class StatsActivity : AppCompatActivity() {
             }
         }
 
-
+        // Set click listener for the Next button
         buttonNext.setOnClickListener {
-
-
-            // Create an intent to start the next activity
-
+            // Create an intent to start the Exercise Selection activity
             val intent = Intent(this@StatsActivity, ExerciseSelection::class.java)
-
-
             startActivity(intent)
         }
-
     }
+
+    /**
+     * Creates a TextView with bold text style and returns it.
+     * @param text The text to be displayed in the TextView.
+     * @return A TextView with bold text style.
+     */
 
     private fun createBoldTextView(text: String): TextView {
         val textView = TextView(this)
@@ -91,6 +95,14 @@ class StatsActivity : AppCompatActivity() {
         return textView
     }
 
+
+
+    /**
+     * Creates a TextView with normal text style and returns it.
+     * @param text The text to be displayed in the TextView.
+     * @return A TextView with normal text style.
+     */
+
     private fun createTextView(text: String): TextView {
         val textView = TextView(this)
         textView.text = text
@@ -98,9 +110,11 @@ class StatsActivity : AppCompatActivity() {
         return textView
     }
 
+    /**
+     * Override the onBackPressed function to finish the activity
+     */
 
     override fun onBackPressed() {
         finish()
     }
 }
-
