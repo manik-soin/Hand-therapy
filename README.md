@@ -10,6 +10,8 @@ This application should be run on a physical Android device to take advantage of
 
 ![Hand Landmark Detection Demo](landmarker.gif?raw=true "Hand Landmark Detection Demo")
 
+https://green-micaela-61.tiiny.site/index.html
+
 ## Build the demo using Android Studio
 
 ### Prerequisites
